@@ -42,6 +42,8 @@ export default function Navbar(){
                 <li className={`nav_items ${currentPath("/contact_us")}`}><NavLink to="/contact_us" >Contact us</NavLink></li>
                 <li className={`nav_items ${currentPath("/curlinary_resources")}`}><NavLink to="/curlinary_resources" >Curlinary Resources</NavLink></li>
                 <li className={`nav_items ${currentPath("/educational_resources")}`}><NavLink to="/educational_resources" >Educational Resources</NavLink></li>
+                <li className={`nav_items border ${currentPath("/login")}`}><NavLink to="/login" >Login</NavLink></li>
+                <li className={`nav_items border ${currentPath("/signup")}`}><NavLink to="/signup" >Sign up</NavLink></li>
                 <li className="flex items-center">
                     <Button
                         variant="ghost"

@@ -1,12 +1,13 @@
 import CarouselEvents from "../components/eventCarousel";
-
+import { JoinusCard } from "../components/JoinusCard";
 // eslint-disable-next-line no-unused-vars
-import { motion } from "motion/react"
+import { easeIn, motion } from "motion/react"
   
 
 export default function Home() {
   return (
     <>
+    <JoinusCard/>
     <motion.div animate={{ opacity: [0, 1], translateY: [-30, 10, 0], transition: {duration: 1.2} }}> 
     <div className="flex flex-col gap-12 py-12 max-w-7xl mx-auto px-4">
       <section className="text-center space-y-6 max-w-3xl mx-auto">

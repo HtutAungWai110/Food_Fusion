@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Navbar from "./components/navbar"
 import './App.css'
 import Home from "./pages/home"
+import Login from "./pages/Login"
+import Signup from "./pages/Signup"
 
 import { ThemeProvider } from "./components/theme-provider"
 
@@ -15,6 +17,8 @@ function App() {
         <Navbar/>
         <Routes>
           <Route path="/" element={<Home/>} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
           <Route path="/about_us" element={<h1>About us</h1>} />
           <Route path="/recipe_collection" element={<h1>Recipe Collection</h1>} />
           <Route path="/community_cookbook" element={<h1>Community Cookbook</h1>} />

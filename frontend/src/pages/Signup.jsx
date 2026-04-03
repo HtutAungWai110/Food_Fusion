@@ -1,0 +1,127 @@
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { useForm } from "react-hook-form"
+import { Link } from "react-router-dom"
+// eslint-disable-next-line no-unused-vars
+import { motion } from "motion/react";
+
+
+export default function Signup() {
+  const { register, formState: { errors }, handleSubmit } = useForm();
+
+  const onSubmit = (formData) => {
+    console.log("Signup Data:", formData)
+  }
+
+  return (
+    <motion.div animate={{opacity: [0,1], y: [-10, 0],transition: {duration: 1}}} className="flex justify-center items-center min-h-[calc(100vh-80px)] py-10">
+      <Card className="w-full max-w-sm border in-dark:border-gray-500 shadow-2xl">
+        <CardHeader>
+          <CardTitle className="font-extrabold text-2xl text-center text-orange-500">Sign Up</CardTitle>
+          <CardDescription className="text-center">
+            Create an account to join the Food Fusion community
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="flex flex-col gap-3">
+              <div className="grid gap-1">
+                <label className="text-sm font-medium">Firstname</label>
+                <input
+                  className="border-b-[2px] p-[10px_0px] outline-none focus:border-b-orange-500 bg-transparent"
+                  type="text"
+                  placeholder="Example: John"
+                  {...register("firstname", {
+                    required: "Enter firstname",
+                    minLength: {
+                      value: 2,
+                      message: "Firstname is too short"
+                    }
+                  })}
+                />
+                {errors.firstname && (
+                  <p className="text-red-500 text-xs mt-1">{errors.firstname.message}</p>
+                )}
+              </div>
+
+              <div className="grid gap-1">
+                <label className="text-sm font-medium">Lastname</label>
+                <input
+                  className="border-b-[2px] p-[10px_0px] outline-none focus:border-b-orange-500 bg-transparent"
+                  type="text"
+                  placeholder="Example: Doe"
+                  {...register("lastname", {
+                    required: "Enter lastname",
+                    minLength: {
+                      value: 2,
+                      message: "Lastname is too short"
+                    }
+                  })}
+                />
+                {errors.lastname && (
+                  <p className="text-red-500 text-xs mt-1">{errors.lastname.message}</p>
+                )}
+              </div>
+
+              <div className="grid gap-1">
+                <label className="text-sm font-medium">Email</label>
+                <input
+                  className="border-b-[2px] p-[10px_0px] outline-none focus:border-b-orange-500 bg-transparent"
+                  type="email"
+                  placeholder="Example: john@example.com"
+                  {...register("email", {
+                    required: "Enter email",
+                    pattern: {
+                      value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                      message: "Enter valid email"
+                    }
+                  })}
+                />
+                {errors.email && (
+                  <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
+                )}
+              </div>
+
+              <div className="grid gap-1">
+                <label className="text-sm font-medium">Password</label>
+                <input
+                  className="border-b-[2px] p-[10px_0px] outline-none focus:border-b-orange-500 bg-transparent"
+                  type="password"
+                  placeholder="Type your password"
+                  {...register("password", {
+                    required: "Password is required",
+                    minLength: {
+                      value: 8,
+                      message: "Password must be at least 8 characters long"
+                    }
+                  })}
+                />
+                {errors.password && (
+                  <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-4 mt-6">
+              <button type="submit" className="w-full bg-orange-500 h-[40px] rounded-2xl text-white font-bold hover:bg-orange-600 transition-colors cursor-pointer">
+                Sign Up
+              </button>
+              <p className="text-center text-sm">
+                Already have an account?{" "}
+                <Link to="/login" className="text-orange-500 hover:underline font-semibold">
+                  Login
+                </Link>
+              </p>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </motion.div>
+  )
+}
