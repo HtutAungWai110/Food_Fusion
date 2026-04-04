@@ -10,17 +10,72 @@ import { useForm } from "react-hook-form"
 import { Link } from "react-router-dom"
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react";
+import { useMutation } from "@tanstack/react-query";
+import { register as registerUserApi } from "../../hooks/useApi";
+import {
+  Alert,
+  
+  AlertDescription,
+  AlertTitle,
+} from "@/components/ui/alert"
+import { Spinner } from "@/components/ui/spinner"
+import { useState,useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 
 export default function Signup() {
   const { register, formState: { errors }, handleSubmit } = useForm();
 
+  const [errorState, setErrorState] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const buttonRef = useRef(null);
+
+  const registerMutation = useMutation({
+     mutationFn: (formData) => registerUserApi(formData),
+     onMutate: () => {
+      setErrorState(null)
+      setLoading(true)
+    },
+     onSuccess: (data) => {
+      buttonRef.current.disabled = true;
+      setErrorState(null)
+      navigate("/login")
+      console.log( data);
+
+     },
+    
+     onError: (error) => {
+      setErrorState(
+       <motion.div animate={{opacity: [0, 1], transition: {duration: 1}}}>
+         <Alert>
+              
+              <AlertTitle>Heads up!</AlertTitle>
+              <AlertDescription className="text-red-500">
+                {error.message}
+              </AlertDescription>
+              
+            </Alert>
+        </motion.div>
+        
+      )
+     },
+     onSettled: () => {
+      setLoading(false)
+     }
+    
+    
+  })
+
   const onSubmit = (formData) => {
-    console.log("Signup Data:", formData)
+    registerMutation.mutate(formData)
   }
 
   return (
     <motion.div animate={{opacity: [0,1], y: [-10, 0],transition: {duration: 1}}} className="flex justify-center items-center min-h-[calc(100vh-80px)] py-10">
+     
+        
+    
       <Card className="w-full max-w-sm border in-dark:border-gray-500 shadow-2xl">
         <CardHeader>
           <CardTitle className="font-extrabold text-2xl text-center text-orange-500">Sign Up</CardTitle>
@@ -29,6 +84,8 @@ export default function Signup() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+
+          
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-3">
               <div className="grid gap-1">
@@ -109,8 +166,9 @@ export default function Signup() {
             </div>
 
             <div className="flex flex-col gap-4 mt-6">
-              <button type="submit" className="w-full bg-orange-500 h-[40px] rounded-2xl text-white font-bold hover:bg-orange-600 transition-colors cursor-pointer">
-                Sign Up
+              {errorState}
+              <button ref={buttonRef} type="submit" className="w-full flex justify-center items-center gap-2 bg-orange-500 h-[40px] rounded-2xl text-white font-bold hover:bg-orange-600 transition-colors cursor-pointer">
+                Sign Up {loading && <Spinner/>}
               </button>
               <p className="text-center text-sm">
                 Already have an account?{" "}

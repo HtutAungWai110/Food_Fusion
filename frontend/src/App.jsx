@@ -8,6 +8,7 @@ import Signup from "./pages/Signup"
 
 import { ThemeProvider } from "./components/theme-provider"
 
+
 function App() {
   
 
@@ -16,6 +17,7 @@ function App() {
       <BrowserRouter>
         <Navbar/>
         <Routes>
+          
           <Route path="/" element={<Home/>} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
@@ -25,6 +27,7 @@ function App() {
           <Route path="/contact_us" element={<h1>Contact us</h1>} />
           <Route path="/curlinary_resources" element={<h1>Curlinary Resources</h1>} />
           <Route path="/educational_resources" element={<h1>Educational Resources</h1>} />
+          
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

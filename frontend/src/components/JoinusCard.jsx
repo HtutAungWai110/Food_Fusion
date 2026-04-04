@@ -13,6 +13,9 @@ import {useForm} from "react-hook-form"
 import { motion, easeIn } from "motion/react";
 import { XIcon } from "lucide-react";
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { register as registerApi } from "../../hooks/useApi";
+
 
 
 
@@ -21,8 +24,20 @@ export function JoinusCard() {
 
     const {register, formState: {errors}, handleSubmit} = useForm();
 
+    const registerMutation = useMutation({
+      mutationFn: (formData) => registerApi(formData),
+      onSuccess: (data) => {
+      console.log( data);
+      },
+      onError: (error) => {
+      console.error(error.message)
+      }
+
+
+    })
+
     const onSubmit = (formData) => {
-        console.log(formData)
+        registerMutation.mutate(formData)
     }
 
     const [isShowing, setIsShowing] = useState(true)
@@ -57,7 +72,7 @@ export function JoinusCard() {
                 {...register("firstname", {
                     required: "Enter firstname",
                     minLength: {
-                        value: 4,
+                        value: 2,
                         message: "Firstname is too short"
                     }
                 })}
@@ -79,7 +94,7 @@ export function JoinusCard() {
                 {...register("lastname", {
                     required: "Enter lastname",
                     minLength: {
-                        value: 4,
+                        value: 2,
                         message: "Lastname is too short"
                     }
                 })}
@@ -100,7 +115,7 @@ export function JoinusCard() {
                 {...register("email", {
                     required: "Enter email",
                     pattern: {
-                        value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/,
+                        value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
                         message: "Enter valid email"
                     }
                 })}
@@ -122,10 +137,7 @@ export function JoinusCard() {
 
                 {...register("password", {
                     required: "Password is required",
-                    pattern: {
-                        value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-                        message: "Invalid password"
-                    },
+                    
                     minLength: {
                         value: 8,
                         message: "Password lenght must be 8 characters long"

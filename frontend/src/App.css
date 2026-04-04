@@ -129,7 +129,7 @@
     }
 
   .navbar{
-    @apply flex justify-between items-center p-4 border-b-2 in-dark:border-gray-600 rounded-b-2xl;
+    @apply flex justify-between items-center p-4 ;
   }
 
   .nav_items{

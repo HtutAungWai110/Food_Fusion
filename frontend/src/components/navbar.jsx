@@ -22,11 +22,12 @@ export default function Navbar(){
     return (
         
         <motion.nav 
-            className="navbar" 
+            className="border-b-2 in-dark:border-gray-600 rounded-b-2xl p-2"
             initial={{ y: -70 }}
             animate={{ y: 0 }}
             transition={{ duration: 1.5, ease: easeIn }}
         >
+        <div className="navbar">
             <motion.h1 
                 className="text-2xl font-extrabold italic text-orange-500 cursor-pointer"
                 animate={{ rotate: [-1, 1, -1], transition: {duration: 1, repeat: Infinity, ease: easeInOut} } }
@@ -42,8 +43,7 @@ export default function Navbar(){
                 <li className={`nav_items ${currentPath("/contact_us")}`}><NavLink to="/contact_us" >Contact us</NavLink></li>
                 <li className={`nav_items ${currentPath("/curlinary_resources")}`}><NavLink to="/curlinary_resources" >Curlinary Resources</NavLink></li>
                 <li className={`nav_items ${currentPath("/educational_resources")}`}><NavLink to="/educational_resources" >Educational Resources</NavLink></li>
-                <li className={`nav_items border ${currentPath("/login")}`}><NavLink to="/login" >Login</NavLink></li>
-                <li className={`nav_items border ${currentPath("/signup")}`}><NavLink to="/signup" >Sign up</NavLink></li>
+         
                 <li className="flex items-center">
                     <Button
                         variant="ghost"
@@ -56,6 +56,14 @@ export default function Navbar(){
                         <span className="sr-only">Toggle theme</span>
                     </Button>
                 </li>
+            </ul>
+
+            
+            </div>
+
+            <ul className="flex justify-end gap-2">
+                <li className={`nav_items border ${currentPath("/login")}`}><NavLink to="/login" >Login</NavLink></li>
+                <li className={`nav_items border ${currentPath("/signup")}`}><NavLink to="/signup" >Sign up</NavLink></li>
             </ul>
         </motion.nav>
     )
