@@ -25,4 +25,25 @@ async function register(formData) {
 
 }
 
-export {register};
+async function login(formData){
+    const res = await fetch('/api/auth/login', {
+        method: "POST",
+        headers: {
+            'Content-Type': 'applicaton/json'
+        },
+        body: JSON.stringify(formData)
+    })
+
+    if(!res.ok){
+    const errorData = await res.json();
+    
+        throw new Error(errorData.message);
+    
+    }
+
+
+    const data = await res.json();
+    return data;
+}
+
+export {register, login};

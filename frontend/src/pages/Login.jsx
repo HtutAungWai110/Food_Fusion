@@ -8,19 +8,24 @@ import {
 } from "@/components/ui/card"
 import { useForm } from "react-hook-form"
 import { Link } from "react-router-dom"
-import { useMutation } from "@tanstack/react-query";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react";
+import { useMutation } from "@tanstack/react-query";
+import { login } from "../../hooks/useApi";
 
 
 export default function Login() {
   const { register, formState: { errors }, handleSubmit } = useForm();
 
   
-
+  const loginMutation = useMutation({
+    mutationFn: (formData) => login(formData),
+    onSuccess: (data) => console.log(data),
+    onError: (error) => console.error(error.message)
+  })
 
   const onSubmit = (formData) => {
-    console.log("Login Data:", formData)
+    loginMutation.mutate(formData)
   }
 
   return (
