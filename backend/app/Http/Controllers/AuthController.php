@@ -49,6 +49,7 @@ class AuthController extends Controller
         $accessToken = auth('api')->setTTL(config('jwt.ttl', 15))->tokenById($user->id);
         $refreshToken = auth('api')->setTTL(config('jwt.refresh_ttl', 20160))->tokenById($user->id);
 
+
         $user->login_attempts = 0;
         $user->save();
 

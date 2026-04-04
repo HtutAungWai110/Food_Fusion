@@ -5,6 +5,7 @@ import SignupCard from "./SignupCard";
 
 export function JoinusCard() {
   const [isShowing, setIsShowing] = useState(true);
+  
 
   if (!isShowing) return null;
 

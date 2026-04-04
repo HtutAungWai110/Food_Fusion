@@ -1,7 +1,8 @@
 import CarouselEvents from "../components/eventCarousel";
 import { JoinusCard } from "../components/JoinusCard";
+
 // eslint-disable-next-line no-unused-vars
-import { easeIn, motion } from "motion/react"
+import { motion } from "motion/react"
   
 
 export default function Home() {
