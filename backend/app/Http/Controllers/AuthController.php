@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Cookie;
+use Carbon\Carbon;
 
 class AuthController extends Controller
 {
@@ -42,13 +44,24 @@ class AuthController extends Controller
 
         }
 
+
+
+        $accessToken = auth('api')->setTTL(config('jwt.ttl', 15))->tokenById($user->id);
+        $refreshToken = auth('api')->setTTL(config('jwt.refresh_ttl', 20160))->tokenById($user->id);
+
         $user->login_attempts = 0;
         $user->save();
 
+        $accessCookie = $this->createCookie('access_token', $accessToken, 15);
+        $refreshCookie = $this->createCookie('refresh_token', $refreshToken, 20160);
+
         return response()->json([
             'message' => 'User login successfully',
-            'user'    => $user
-        ], 201);
+            'user'    => $user,
+        ], 201)->withCookie($accessCookie)->withCookie($refreshCookie)
+
+
+        ;
 
 
     }
@@ -88,6 +101,21 @@ class AuthController extends Controller
         ], 201);
 
 
+    }
+
+    private function createCookie($name, $token, $minutes)
+    {
+        return cookie(
+            $name,
+            $token,
+            $minutes,
+            null,
+            null,
+            true,  // Secure
+            true,  // HttpOnly
+            false,
+            'Lax'  // SameSite
+        );
     }
 
 

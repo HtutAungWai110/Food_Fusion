@@ -17,16 +17,17 @@ import {
 } from "@/components/ui/alert"
 import { Spinner } from "@/components/ui/spinner"
 import { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import { XIcon } from "lucide-react";
+import { AlertOctagon } from "lucide-react";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react";
+import SignupMessage from "./SignupSuccessful";
 
 export default function SignupCard({ isPopup = false, onClose }) {
   const { register, formState: { errors }, handleSubmit } = useForm();
   const [errorState, setErrorState] = useState(null);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const [isSuccess, setIsSuccess] = useState(false);
   const buttonRef = useRef(null);
 
   const registerMutation = useMutation({
@@ -35,20 +36,17 @@ export default function SignupCard({ isPopup = false, onClose }) {
       setErrorState(null)
       setLoading(true)
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       if (buttonRef.current) buttonRef.current.disabled = true;
       setErrorState(null)
-      if (isPopup && onClose) {
-        onClose();
-      }
-      navigate("/login")
-      console.log(data);
+      setIsSuccess(true);
     },
     onError: (error) => {
       setErrorState(
         <motion.div animate={{ opacity: [0, 1], transition: { duration: 1 } }}>
           <Alert>
-            <AlertTitle>Heads up!</AlertTitle>
+            <AlertOctagon/>
+            <AlertTitle>Warning!</AlertTitle>
             <AlertDescription className="text-red-500">
               {error.message}
             </AlertDescription>
@@ -63,6 +61,10 @@ export default function SignupCard({ isPopup = false, onClose }) {
 
   const onSubmit = (formData) => {
     registerMutation.mutate(formData)
+  }
+
+  if (isSuccess) {
+    return <SignupMessage isPopUp={isPopup}/>;
   }
 
   return (

@@ -8,20 +8,31 @@ import {
 } from "@/components/ui/card"
 import { useForm } from "react-hook-form"
 import { Link } from "react-router-dom"
+import { Spinner } from "@/components/ui/spinner"
+import { useState, useRef } from "react";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react";
 import { useMutation } from "@tanstack/react-query";
 import { login } from "../../hooks/useApi";
 
 
+
 export default function Login() {
   const { register, formState: { errors }, handleSubmit } = useForm();
+
+  const [isLoading, setLoading] = useState(false);
+  const buttonRef = useRef(null);
 
   
   const loginMutation = useMutation({
     mutationFn: (formData) => login(formData),
-    onSuccess: (data) => console.log(data),
-    onError: (error) => console.error(error.message)
+    onSuccess: (data) => {
+      buttonRef.current.disabled = true;
+      console.log(data);
+    },
+    onError: (error) => console.error(error.message),
+    onMutate: () => setLoading(true),
+    onSettled: () => setLoading(false)
   })
 
   const onSubmit = (formData) => {
@@ -78,12 +89,12 @@ export default function Login() {
             </div>
 
             <div className="flex flex-col gap-4 mt-8">
-              <button type="submit" className="w-full bg-orange-500 h-[40px] rounded-2xl text-white font-bold hover:bg-orange-600 transition-colors cursor-pointer">
-                Login
+              <button ref={buttonRef} type="submit" className="w-full bg-orange-500 h-[40px] rounded-2xl text-white font-bold hover:bg-orange-600 transition-colors cursor-pointer flex justify-center items-center gap-2">
+                Login {isLoading && <Spinner/>}
               </button>
               <p className="text-center text-sm">
                 Don't have an account?{" "}
-                <Link to="/signup" className="text-orange-500 hover:underline font-semibold">
+                <Link to="/signup" className="text-orange-500 hover:underline font-semibold" >
                   Sign up
                 </Link>
               </p>
