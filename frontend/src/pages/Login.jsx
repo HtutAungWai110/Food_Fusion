@@ -10,10 +10,11 @@ import { useForm } from "react-hook-form"
 import { Link } from "react-router-dom"
 import { Spinner } from "@/components/ui/spinner"
 import { useState, useRef } from "react";
+import MessageBox from "../components/messageBox";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react";
 import { useMutation } from "@tanstack/react-query";
-import { login } from "../../hooks/useApi";
+import { login } from "../hooks/useApi";
 import { useNavigate } from "react-router-dom";
 
 
@@ -23,20 +24,26 @@ export default function Login() {
   const [isLoading, setLoading] = useState(false);
   const buttonRef = useRef(null);
   const navigate = useNavigate();
+  const [message, setMessage] = useState(null);
 
   
   const loginMutation = useMutation({
     mutationFn: (formData) => login(formData),
     onSuccess: (data) => {
+      setMessage(<MessageBox status={"success"} message={data.message}/>)
       buttonRef.current.disabled = true;
    
       navigate('/', { replace: false, state: null });
       window.location.reload();
       
-      console.log(data);
     },
-    onError: (error) => console.error(error.message),
-    onMutate: () => setLoading(true),
+    onError: (error) => setMessage(
+      <MessageBox status={"error"} message={error.message}/>
+    ),
+    onMutate: () => {
+      setMessage(null);
+      setLoading(true);
+    },
     onSettled: () => setLoading(false)
   })
 
@@ -92,7 +99,7 @@ export default function Login() {
                 )}
               </div>
             </div>
-
+            {message}
             <div className="flex flex-col gap-4 mt-8">
               <button ref={buttonRef} type="submit" className="w-full bg-orange-500 h-[40px] rounded-2xl text-white font-bold hover:bg-orange-600 transition-colors cursor-pointer flex justify-center items-center gap-2">
                 Login {isLoading && <Spinner/>}

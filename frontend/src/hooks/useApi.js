@@ -13,6 +13,12 @@ async function register(formData) {
     const errorData = await res.json();
     if (errorData.errors && errorData.errors.email) {
         throw new Error(errorData.errors.email[0]);
+    } else if (errorData.errors && errorData.errors.password) {
+        throw new Error(errorData.errors.password[0]);
+    } else if (errorData.errors && errorData.errors.firstname) {
+        throw new Error(errorData.errors.firstname[0]);
+    } else if (errorData.errors && errorData.errors.lastname) {
+        throw new Error(errorData.errors.lastname[0]);
     }
     }
 

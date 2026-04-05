@@ -9,18 +9,12 @@ import { useForm } from "react-hook-form"
 import { Link } from "react-router-dom"
 
 import { useMutation } from "@tanstack/react-query";
-import { register as registerUserApi } from "../../hooks/useApi";
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "@/components/ui/alert"
+import { register as registerUserApi } from "../hooks/useApi";
+
 import { Spinner } from "@/components/ui/spinner"
 import { useState, useRef } from "react";
 import { XIcon } from "lucide-react";
-import { AlertOctagon } from "lucide-react";
-// eslint-disable-next-line no-unused-vars
-import { motion } from "motion/react";
+import MessageBox from "./messageBox";
 import SignupMessage from "./SignupSuccessful";
 
 export default function SignupCard({ isPopup = false, onClose }) {
@@ -43,15 +37,7 @@ export default function SignupCard({ isPopup = false, onClose }) {
     },
     onError: (error) => {
       setErrorState(
-        <motion.div animate={{ opacity: [0, 1], transition: { duration: 1 } }}>
-          <Alert>
-            <AlertOctagon/>
-            <AlertTitle>Warning!</AlertTitle>
-            <AlertDescription className="text-red-500">
-              {error.message}
-            </AlertDescription>
-          </Alert>
-        </motion.div>
+        <MessageBox status={"error"} message={error.message}/>
       )
     },
     onSettled: () => {

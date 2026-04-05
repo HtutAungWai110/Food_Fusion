@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { proxyFetch } from "../../hooks/useApi";
+import { proxyFetch } from "../hooks/useApi";
 
 export const getUser = createAsyncThunk(
     'user/getUser',
