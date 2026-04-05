@@ -5,11 +5,14 @@ import { easeIn, easeInOut, motion } from "motion/react"
 import { useTheme } from "./theme-provider"
 import { Button } from "./ui/button"
 import { Moon, Sun } from "lucide-react"
+import { useSelector } from "react-redux"
+import UserProfileNav from "./userProfileNav"
 
 export default function Navbar(){
     
     const location = useLocation()
     const { theme, setTheme } = useTheme()
+    const {data, loading} = useSelector((state) => state.user);
 
     useEffect(() => {
         console.log(location.pathname)
@@ -60,11 +63,18 @@ export default function Navbar(){
 
             
             </div>
+            {!loading && !data &&
+                <ul className="flex justify-end gap-2">
+                    <li className={`nav_items border ${currentPath("/login")}`}><NavLink to="/login" >Login</NavLink></li>
+                    <li className={`nav_items border ${currentPath("/signup")}`}><NavLink to="/signup" >Sign up</NavLink></li>
+                </ul>
+            }
 
-            <ul className="flex justify-end gap-2">
-                <li className={`nav_items border ${currentPath("/login")}`}><NavLink to="/login" >Login</NavLink></li>
-                <li className={`nav_items border ${currentPath("/signup")}`}><NavLink to="/signup" >Sign up</NavLink></li>
-            </ul>
+            {data && !loading &&
+                <UserProfileNav/>
+            }
+            
+            
         </motion.nav>
     )
 }

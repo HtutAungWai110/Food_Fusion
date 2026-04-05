@@ -3,12 +3,24 @@ import { JoinusCard } from "../components/JoinusCard";
 
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react"
+import { useSelector } from "react-redux";
   
 
 export default function Home() {
+
+  const {data, loading} = useSelector((state) => state.user);
+  
+
+  
+
+  
+
   return (
     <>
-    <JoinusCard/>
+    {!loading && !data &&
+      <JoinusCard/>
+    }
+    
     <motion.div animate={{ opacity: [0, 1], translateY: [-30, 10, 0], transition: {duration: 1.2} }}> 
     <div className="flex flex-col gap-12 py-12 max-w-7xl mx-auto px-4">
       <section className="text-center space-y-6 max-w-3xl mx-auto">

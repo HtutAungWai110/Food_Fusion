@@ -46,14 +46,14 @@ class AuthController extends Controller
 
 
 
-        $accessToken = auth('api')->setTTL(config('jwt.ttl', 15))->tokenById($user->id);
+        $accessToken = auth('api')->setTTL(config('jwt.ttl', 60))->tokenById($user->id);
         $refreshToken = auth('api')->setTTL(config('jwt.refresh_ttl', 20160))->tokenById($user->id);
 
 
         $user->login_attempts = 0;
         $user->save();
 
-        $accessCookie = $this->createCookie('access_token', $accessToken, 15);
+        $accessCookie = $this->createCookie('access_token', $accessToken, 60);
         $refreshCookie = $this->createCookie('refresh_token', $refreshToken, 20160);
 
         return response()->json([
@@ -102,6 +102,64 @@ class AuthController extends Controller
         ], 201);
 
 
+    }
+
+    public function refreshToken(Request $request)
+    {
+        // Check if access_token exists in cookies
+        $accessToken = $request->cookie('access_token');
+
+        // If access_token exists and is valid, no refresh needed
+        if ($accessToken) {
+            try {
+                $payload = auth('api')->setToken($accessToken)->getPayload();
+                if ($payload && $payload->get('exp') > time()) {
+                    return response()->json([
+                        'message' => 'Access token is still valid',
+                    ], 200);
+                }
+            } catch (\Exception $e) {
+                // Token is invalid, proceed to check refresh token
+            }
+        }
+
+        // Check for refresh_token in cookies
+        $refreshToken = $request->cookie('refresh_token');
+
+        if (!$refreshToken) {
+            return response()->json([
+                'message' => 'Unauthorized - No tokens found',
+            ], 401);
+        }
+
+        try {
+            // Validate refresh token and get user
+            $payload = auth('api')->setToken($refreshToken)->getPayload();
+            $userId = $payload->get('sub');
+            $user = User::find($userId);
+
+            if (!$user) {
+                return response()->json([
+                    'message' => 'Unauthorized - User not found',
+                ], 401);
+            }
+
+            // Generate new access token
+            $newAccessToken = auth('api')->setTTL(config('jwt.ttl', 60))->tokenById($user->id);
+
+            // Create new access token cookie
+            $accessCookie = $this->createCookie('access_token', $newAccessToken, 60);
+
+            return response()->json([
+                'message' => 'Token refreshed successfully',
+                'user'    => $user,
+            ], 200)->withCookie($accessCookie);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Unauthorized - Invalid refresh token',
+            ], 401);
+        }
     }
 
     private function createCookie($name, $token, $minutes)

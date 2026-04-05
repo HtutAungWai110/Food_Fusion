@@ -14,7 +14,7 @@ import { useState, useRef } from "react";
 import { motion } from "motion/react";
 import { useMutation } from "@tanstack/react-query";
 import { login } from "../../hooks/useApi";
-
+import { useNavigate } from "react-router-dom";
 
 
 export default function Login() {
@@ -22,12 +22,17 @@ export default function Login() {
 
   const [isLoading, setLoading] = useState(false);
   const buttonRef = useRef(null);
+  const navigate = useNavigate();
 
   
   const loginMutation = useMutation({
     mutationFn: (formData) => login(formData),
     onSuccess: (data) => {
       buttonRef.current.disabled = true;
+   
+      navigate('/', { replace: false, state: null });
+      window.location.reload();
+      
       console.log(data);
     },
     onError: (error) => console.error(error.message),

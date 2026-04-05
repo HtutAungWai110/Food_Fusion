@@ -46,4 +46,26 @@ async function login(formData){
     return data;
 }
 
-export {register, login};
+async function proxyFetch(url, {...options}){
+    const res = await fetch('/api/auth/refresh-token', {
+        method: "POST",
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+
+    if(!res.ok && res.status === 401){
+        const error = await res.json();
+        throw new Error(error.message)
+    }
+
+    
+
+    return fetch(url, { ...options, credentials: 'include', headers: {'Content-Type': 'application/json'} });
+
+    
+
+}
+
+export {register, login, proxyFetch};
