@@ -8,7 +8,7 @@ import Signup from "./pages/Signup"
 
 import { ThemeProvider } from "./components/theme-provider"
 import { useEffect } from "react"
-import {useDispatch, useSelector} from "react-redux"
+import {useDispatch} from "react-redux"
 import { getUser } from "./states/UserState"
 
 
@@ -16,18 +16,10 @@ function App() {
  
 
   const dispatch = useDispatch();
-  const {data} = useSelector((state) => state.user)
 
   useEffect(() => {
     dispatch(getUser())
   }, [dispatch])
-
-  useEffect(() => {
-    if(data){
-      console.log(data)
-    }
-    
-  }, [data])
 
   
 

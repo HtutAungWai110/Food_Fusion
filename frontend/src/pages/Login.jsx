@@ -23,6 +23,7 @@ export default function Login() {
 
   const [isLoading, setLoading] = useState(false);
   const buttonRef = useRef(null);
+
   const navigate = useNavigate();
   const [message, setMessage] = useState(null);
 
@@ -32,15 +33,19 @@ export default function Login() {
     onSuccess: (data) => {
       setMessage(<MessageBox status={"success"} message={data.message}/>)
       buttonRef.current.disabled = true;
-   
-      navigate('/', { replace: false, state: null });
-      window.location.reload();
+
+      setTimeout(() => {
+          navigate('/', { replace: false, state: null });
+          window.location.reload();
+      }, 1000);
+      
       
     },
     onError: (error) => setMessage(
       <MessageBox status={"error"} message={error.message}/>
     ),
     onMutate: () => {
+      
       setMessage(null);
       setLoading(true);
     },
@@ -98,8 +103,9 @@ export default function Login() {
                   <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
                 )}
               </div>
+              {message}
             </div>
-            {message}
+            
             <div className="flex flex-col gap-4 mt-8">
               <button ref={buttonRef} type="submit" className="w-full bg-orange-500 h-[40px] rounded-2xl text-white font-bold hover:bg-orange-600 transition-colors cursor-pointer flex justify-center items-center gap-2">
                 Login {isLoading && <Spinner/>}

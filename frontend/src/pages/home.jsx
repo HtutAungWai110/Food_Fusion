@@ -9,11 +9,6 @@ import { useSelector } from "react-redux";
 export default function Home() {
 
   const {data, loading} = useSelector((state) => state.user);
-  
-
-  
-
-  
 
   return (
     <>
