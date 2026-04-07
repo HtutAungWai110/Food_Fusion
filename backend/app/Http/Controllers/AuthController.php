@@ -27,6 +27,36 @@ class AuthController extends Controller
         }
 
         $user = User::firstWhere('email', $request->input('email'));
+
+
+
+
+        if ($user->lockout_until && $user->lockout_until > now()) {
+            $minutesLeft = round(now()->diffInMinutes($user->lockout_until));
+
+            return response()->json([
+                'message' => "Your account is temporarily locked. Try again after {$minutesLeft} minutes."
+            ], 403);
+        }
+
+
+        if ($user->lockout_until && $user->lockout_until <= now()) {
+            $user->update([
+                'lockout_until' => null,
+                'login_attempts' => 0,
+            ]);
+        }
+
+        if($user->login_attempts >= 5){
+            $user->update([
+                'lockout_until' => now()->addMinutes(15)
+            ]);
+
+            return response()->json([
+                'message' => "Your account is temporarily locked. Try again after 15 minutes."
+            ], 401);
+        }
+
         $passwordValid = Hash::check($request->input('password'), $user->password);
         if(!$user){
             return response()->json([
@@ -49,9 +79,6 @@ class AuthController extends Controller
         $accessToken = auth('api')->setTTL(config('jwt.ttl', 60))->tokenById($user->id);
         $refreshToken = auth('api')->setTTL(config('jwt.refresh_ttl', 20160))->tokenById($user->id);
 
-
-        $user->login_attempts = 0;
-        $user->save();
 
         $accessCookie = $this->createCookie('access_token', $accessToken, 60);
         $refreshCookie = $this->createCookie('refresh_token', $refreshToken, 20160);
@@ -176,6 +203,8 @@ class AuthController extends Controller
             'Lax'  // SameSite
         );
     }
+
+
 
 
 }

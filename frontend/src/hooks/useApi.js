@@ -52,26 +52,39 @@ async function login(formData){
     return data;
 }
 
-async function proxyFetch(url, {...options}){
-    const res = await fetch('/api/auth/refresh-token', {
-        method: "POST",
+async function proxyFetch(url, options = {}) {
+    //Set default headers and credentials
+    const defaultOptions = {
         credentials: 'include',
+        ...options,
         headers: {
-            'Content-Type': 'application/json'
-        }
-    })
+            'Content-Type': 'application/json',
+            ...options.headers,
+        },
+    };
 
-    if(!res.ok && res.status === 401){
-        const error = await res.json();
-        throw new Error(error.message)
+    //Attempt the actual request first
+    let response = await fetch(url, defaultOptions);
+
+    //If unauthorized, try to refresh once
+    if (response.status === 401) {
+        const refreshRes = await fetch('/api/auth/refresh-token', {
+            method: "POST",
+            credentials: 'include',
+        });
+
+        if (refreshRes.ok) {
+            // Refresh worked, retry the original request
+            response = await fetch(url, defaultOptions);
+        } else {
+            // Both tokens failed: Wipe session and throw
+            sessionStorage.removeItem("user_data");
+            const error = await refreshRes.json();
+            throw new Error(error.message || 'Session expired');
+        }
     }
 
-    
-
-    return fetch(url, { ...options, credentials: 'include', headers: {'Content-Type': 'application/json'} });
-
-    
-
+    return response;
 }
 
 export {register, login, proxyFetch};
