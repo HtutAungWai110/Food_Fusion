@@ -29,7 +29,7 @@ Route::prefix('user')->group(function () {
 });
 
 Route::prefix('recipes')->group(function () {
-    Route::get('/all', [RecipesController::class, 'getRecipes']);
+    Route::get('/', [RecipesController::class, 'getRecipes']);
 
 
 });

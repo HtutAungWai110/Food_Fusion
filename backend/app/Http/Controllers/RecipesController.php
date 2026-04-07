@@ -9,16 +9,27 @@ class RecipesController extends Controller
 {
     //
 
-    public function getRecipes(Request $req){
-        try {
-            $recipes = Recipe::all();
+    public function getRecipes(Request $req)
+    {
+        $cuisine = $req->query('cuisine');
+        $difficulty = $req->query('difficulty');
 
-            return response()->json($recipes);
+        try {
+            $query = Recipe::query();
+
+            if ($cuisine && $cuisine !== 'All') {
+                $query->where('cuisine', $cuisine);
+            }
+
+            if ($difficulty && $difficulty !== 'Any') {
+                $query->where('difficulty', $difficulty);
+            }
+
+            return response()->json($query->get());
         } catch (\Exception $e) {
             return response()->json([
-                "message" => "Failded to fetch resources"
+                'message' => 'Failed to fetch resources'
             ], 500);
         }
-
     }
 }

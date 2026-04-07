@@ -51,6 +51,7 @@ class Recipe extends Model
         'servings',
         'ingredients',
         'instructions',
+        'detailed_instruction',
         'image_path',
     ];
 
