@@ -87,4 +87,18 @@ async function proxyFetch(url, options = {}) {
     return response;
 }
 
-export {register, login, proxyFetch};
+async function getRecipes(cuisine, difficulty){
+    const res = await fetch(`/api/recipes?cuisine=${encodeURI(cuisine)}&difficulty=${encodeURI(difficulty)}`, {
+        method: "GET"
+    });
+
+    if(!res.ok){
+        const error = await res.json();
+        throw new Error(`Status: ${error.status}, ${error.message}`)
+    }
+
+    const data = await res.json();
+    return data;
+}
+
+export {register, login, proxyFetch, getRecipes};

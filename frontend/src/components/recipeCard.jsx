@@ -37,10 +37,6 @@ import { useState } from "react"
 import { motion } from "motion/react"
 
 export default function RecipeCard({ recipe }) {
-  const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 },
-  };
   const {
     title,
     description,
@@ -60,6 +56,11 @@ export default function RecipeCard({ recipe }) {
 
   // Format date
   const date = new Date(created_at).toLocaleDateString();
+
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 },
+  };
 
   return (
     <motion.div
