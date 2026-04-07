@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\RecipesController;
 
 Route::get('/', function () {
     // return response()->json([
@@ -23,6 +24,12 @@ Route::prefix('auth')->group(function () {
 
 Route::prefix('user')->group(function () {
     Route::get('/info', [UserController::class, 'userInfo']);
+
+
+});
+
+Route::prefix('recipes')->group(function () {
+    Route::get('/all', [RecipesController::class, 'getRecipes']);
 
 
 });
