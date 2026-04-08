@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { getRecipe } from "../hooks/useApi"
-import { useSearchParams, Link, data } from "react-router-dom"
+import { useSearchParams, Link } from "react-router-dom"
 import { 
   Clock, 
   Users, 
@@ -18,6 +18,7 @@ import { Separator } from "@/components/ui/separator"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+// eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react"
 import { useEffect } from "react"
 
@@ -31,6 +32,16 @@ export default function RecipeDetail() {
         enabled: !!id,
     })
 
+    useEffect(() => {
+        console.log(error)
+    }, [error])
+
+    useEffect(() => {
+        console.log(data
+
+        )
+    }, [data])
+
     // useEffect(() => {
     //     console.log(recipe?.recipe)
     // }, [recipe])
@@ -39,7 +50,7 @@ export default function RecipeDetail() {
         return <RecipeDetailSkeleton />;
     }
 
-    if (error || !data) {
+    if (error) {
         return (
             <div className="container mx-auto px-4 py-12 flex justify-center">
                 <Alert variant="destructive" className="max-w-2xl">
@@ -58,7 +69,7 @@ export default function RecipeDetail() {
         );
     }
 
-    if(data.recipe){
+    if(data){
 
         const {
             title,
@@ -73,7 +84,7 @@ export default function RecipeDetail() {
             detailed_instruction,
             image_path,
             created_at,
-        } = data.recipe;
+        } = data;
 
         const date = new Date(created_at).toLocaleDateString(undefined, {
             year: 'numeric',

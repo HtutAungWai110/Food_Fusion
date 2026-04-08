@@ -38,15 +38,13 @@ class RecipesController extends Controller
 
         try {
             $recipe = Recipe::find($id);
-            // if(!$recipe){
-            //     return response()->json([
-            //         "message" => "Recipe not found"
-            //     ], 404);
-            // }
+            if(!$recipe){
+                return response()->json([
+                    "message" => "Recipe not found"
+                ], 404);
+            }
 
-            return response()->json([
-                "recipe" => $recipe
-            ], 201);
+            return response()->json( $recipe,201);
 
 
         } catch (\Exception $e) {

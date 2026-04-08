@@ -94,7 +94,7 @@ async function getRecipes(cuisine, difficulty, page){
 
     if(!res.ok){
         const error = await res.json();
-        throw new Error(`Status: ${error.status}, ${error.message}`)
+        throw new Error(`Status: ${res.status}, ${error.message}`)
     }
 
     const data = await res.json();
@@ -108,7 +108,7 @@ async function  getRecipe(id) {
 
     if(!res.ok){
         const error = await res.json();
-        throw new Error(`Status: ${error.status}, ${error.message}`)
+        throw new Error(`Status: ${res.status}, ${error.message}`)
     }
 
     const data = await res.json();
