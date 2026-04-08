@@ -25,19 +25,22 @@ import {
 import { 
   Clock, 
   Users, 
-  ChefHat, 
-  Heart, 
+  ChefHat,  
   ChevronDown, 
   CookingPot, 
   Info,
-  Calendar
+  Calendar,
+  ThumbsUp
 } from "lucide-react"
+import {Link} from "react-router-dom"
+
 import { useState } from "react"
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react"
 
 export default function RecipeCard({ recipe }) {
   const {
+    id,
     title,
     description,
     cuisine,
@@ -49,7 +52,7 @@ export default function RecipeCard({ recipe }) {
     ingredients = [],
     instructions = [],
     image_path,
-    created_at
+    created_at,
   } = recipe;
 
   const [open, setOpen] = useState(false);
@@ -99,7 +102,7 @@ export default function RecipeCard({ recipe }) {
               {title}
             </CardTitle>
             <div className="flex items-center text-rose-500 font-medium text-sm">
-              <Heart className="w-4 h-4 mr-1 fill-current" />
+              <ThumbsUp className="w-4 h-4 mr-1 fill-current" />
               {likes}
             </div>
           </div>
@@ -181,10 +184,14 @@ export default function RecipeCard({ recipe }) {
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-80 max-h-[400px] overflow-y-auto p-4" side="top" align="center">
-              <h4 className="font-bold mb-3 flex items-center gap-2 text-orange-600">
-                <CookingPot className="w-4 h-4" />
-                Instructions
-              </h4>
+              <div className="flex justify-between items-center">
+                <h4 className="font-bold mb-3 flex items-center gap-2 text-orange-600">
+                  <CookingPot className="w-4 h-4" />
+                  Instructions
+                </h4>
+
+                <Link className="text-orange-700" to={`/recipe_collection/recipe?id=${encodeURI(id)}`}>View more</Link>
+              </div>
               <div className="space-y-4">
                 {instructions.length > 0 ? (
                   instructions.map((step, index) => (

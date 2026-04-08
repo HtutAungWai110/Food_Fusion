@@ -11,6 +11,7 @@ import {
   ComboboxList,
 } from "@/components/ui/combobox"
 import { useEffect, useState } from "react"
+import Pagination from "../components/pagination"
 
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react"
@@ -18,14 +19,13 @@ import { motion } from "motion/react"
 export default function Recipes() {
   const [cuisine, setCuisine] = useState("All");
   const [difficulty, setDifficulty] = useState("Any");
+  const [page, setPage] = useState(1);
   const queryClient = useQueryClient();
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["recipes"],
-    queryFn: () => getRecipes(cuisine, difficulty),
+    queryFn: () => getRecipes(cuisine, difficulty, page),
   })
-
-
 
   const cuisines = [
     "All", "Thai", "Italian", "Indian", "Japanese", "Mexican", "Chinese", "Mediterranean"
@@ -36,6 +36,12 @@ export default function Recipes() {
   ]
 
   useEffect(() => {
+  
+    queryClient.invalidateQueries({queryKey: ["recipes"]})
+  }, [cuisine, difficulty, queryClient, page])
+
+  useEffect(() => {
+    setPage(1);
     queryClient.invalidateQueries({queryKey: ["recipes"]})
   }, [cuisine, difficulty, queryClient])
 
@@ -128,12 +134,14 @@ export default function Recipes() {
       </div>
 
       <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 justify-items-center">
-        {data?.map((recipe) => (
+        {data?.data?.map((recipe) => (
           <RecipeCard key={recipe.id} recipe={recipe} />
         ))}
       </motion.div>
+      <Pagination currentPage={page} maxPage={data.last_page} setPage={setPage}/>
 
-      {data?.length === 0 && (
+
+      {data?.data?.length === 0 && (
         <div className="text-center py-20">
           <p className="text-xl text-muted-foreground italic">No recipes found. Be the first to share one!</p>
         </div>

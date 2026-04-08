@@ -1,0 +1,108 @@
+recipe
+{ 
+cooking_time
+: 
+30
+created_at
+: 
+"2026-04-07T21:40:49.000000Z"
+cuisine
+: 
+"Indian"
+description
+: 
+"Fresh spinach curry with soft paneer cheese cubes."
+detailed_instruction
+: 
+"\n## Step 1: Blanch the Spinach\nBring a large pot of water to boil. Add 1 pound of fresh spinach and blanch for 2 minutes until wilted. Immediately transfer to an ice bath to stop cooking and preserve the bright green color. Drain well and blend into a smooth puree using a blender or food processor. Set aside.\n\n## Step 2: Prepare the Paneer\nCut 400g of paneer cheese into 1-inch cubes. Heat 2 tablespoons of oil in a large pan over medium heat. Fry paneer cubes until golden brown on all sides, about 2-3 minutes. Remove and set aside. Alternatively, you can use the paneer as-is without frying for a softer texture.\n\n## Step 3: Cook the Aromatics\nIn the same pan, add 1 tablespoon of oil or ghee. Add 1 large diced onion and cook until golden brown, about 5-6 minutes. Add 1 tablespoon minced ginger and 1 tablespoon minced garlic. Sauté for 1 minute until fragrant.\n\n## Step 4: Add Spices and Tomatoes\nAdd 2 medium diced tomatoes and cook until soft, about 5 minutes. Add 1 teaspoon cumin powder, 1 teaspoon coriander powder, 1/2 teaspoon turmeric, and 1/2 teaspoon garam masala. Cook for 2 minutes until the oil begins to separate from the mixture.\n\n## Step 5: Combine Everything\nAdd the spinach puree to the pan along with 1/2 cup of water. Stir well and simmer for 5 minutes. Add the fried paneer cubes and 1/4 cup of cream. Simmer for another 3-4 minutes until the paneer absorbs the flavors. Add salt to taste.\n\n## Step 6: Serve\nTransfer to a serving bowl. Drizzle with additional cream and sprinkle with garam masala. Serve hot with naan, roti, or basmati rice."
+dietary
+: 
+"Vegetarian"
+difficulty
+: 
+"Easy"
+id
+: 
+"211e091b-b0cd-4c15-b120-efa51c4c5db4"
+image_path
+: 
+null
+ingredients
+: 
+Array(9)
+0
+: 
+"Spinach"
+1
+: 
+"Paneer cheese"
+2
+: 
+"Onion"
+3
+: 
+"Tomatoes"
+4
+: 
+"Cream"
+5
+: 
+"Garam masala"
+6
+: 
+"Cumin"
+7
+: 
+"Ginger"
+8
+: 
+"Garlic"
+length
+: 
+9
+[[Prototype]]
+: 
+Array(0)
+instructions
+: 
+Array(6)
+0
+: 
+"Blanch spinach and blend"
+1
+: 
+"Sauté onions and aromatics"
+2
+: 
+"Add spices and tomatoes"
+3
+: 
+"Pour in spinach puree"
+4
+: 
+"Cut and fry paneer"
+5
+: 
+"Add paneer to curry"
+length
+: 
+6
+[[Prototype]]
+: 
+Array(0)
+likes
+: 
+551
+servings
+: 
+4
+title
+: 
+"Palak Paneer"
+updated_at
+: 
+"2026-04-08T01:17:52.000000Z"
+user_id
+: 
+"019d5e3e-d422-7323-875b-3b37f1bb50df"
+}

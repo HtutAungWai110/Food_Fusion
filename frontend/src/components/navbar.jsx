@@ -41,7 +41,7 @@ export default function Navbar(){
             <ul className="flex justify-between items-center gap-5">
                 <li className={`nav_items ${currentPath("/")}`}><NavLink to="/" >Home</NavLink></li>
                 <li className={`nav_items ${currentPath("/about_us")}`}><NavLink to="/about_us" >About us</NavLink></li>
-                <li className={`nav_items ${currentPath("/recipe_collection")}`}><NavLink to="/recipe_collection" >Recipe Collection</NavLink></li>
+                <li className={`nav_items ${currentPath("/recipe_collection")} ${currentPath("/recipe_collection/recipe")}`}><NavLink to="/recipe_collection" >Recipe Collection</NavLink></li>
                 <li className={`nav_items ${currentPath("/community_cookbook")}`}><NavLink to="/community_cookbook" >Community cookbook</NavLink></li>
                 <li className={`nav_items ${currentPath("/contact_us")}`}><NavLink to="/contact_us" >Contact us</NavLink></li>
                 <li className={`nav_items ${currentPath("/curlinary_resources")}`}><NavLink to="/curlinary_resources" >Curlinary Resources</NavLink></li>
