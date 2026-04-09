@@ -120,5 +120,30 @@ class RecipesController extends Controller
 
     }
 
+    public function checkLiked(Request $req){
+        $userId = $req->attributes->get('user_id');
+        $postId = $req->query('id');
+
+        if (!$postId) {
+            return response()->json([
+                'message' => 'post_id is required'
+            ], 400);
+        }
+
+        try {
+            $isLiked = RecipeLikes::where('post_id', $postId)
+            ->where('user_id', $userId)
+            ->exists();
+
+
+            return response()->json(["liked" => $isLiked],200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Something went wrong!'
+            ], 500);
+        }
+
+    }
+
 
 }

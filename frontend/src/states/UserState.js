@@ -40,6 +40,13 @@ const userSlice = createSlice({
     },
     reducers: {
         // You can add synchronous reducers here if needed
+        setUserNull : (state) => {
+            if(state.data){
+            state.data = null;
+            state.error = null;
+            state.loading = false;
+            }
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -60,4 +67,5 @@ const userSlice = createSlice({
     }
 });
 
+export const { setUserNull } = userSlice.actions;
 export default userSlice.reducer;

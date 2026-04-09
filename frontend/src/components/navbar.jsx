@@ -14,13 +14,15 @@ export default function Navbar(){
     const { theme, setTheme } = useTheme()
     const {data, loading} = useSelector((state) => state.user);
 
-    useEffect(() => {
-        console.log(location.pathname)
-    }, [location])
+    
 
     function currentPath(path){
         return location.pathname === path ? "active": ""
     }
+
+    useEffect(() => {
+        console.log(data);
+    }, [data])
 
     return (
         

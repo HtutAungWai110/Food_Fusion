@@ -13,13 +13,15 @@ import { useEffect } from "react"
 import {useDispatch, useSelector} from "react-redux"
 import { getUser } from "./states/UserState"
 import { Spinner } from "@/components/ui/spinner"
+import PublicRoute from "./lib/PublicRoute"
+import ProtectedRoute from "./lib/ProtectedRoute"
 
 
 function App() {
  
 
   const dispatch = useDispatch();
-  const {data, loading, error} = useSelector((state) => state.user); 
+  const {data, loading} = useSelector((state) => state.user); 
 
   useEffect(() => {
     dispatch(getUser())
@@ -43,8 +45,15 @@ function App() {
         <Routes>
           
           <Route path="/" element={<Home/>} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+          <Route element={<PublicRoute/>}>
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+          </Route>
+          <Route element={<ProtectedRoute/>}>
+            <Route path="/profile" element={<div>Profile</div>}/>
+          </Route>
+          
+          
           <Route path="/about_us" element={<h1>About us</h1>} />
           <Route path="/recipe_collection" element={<Recipes/>} />
           <Route path="/recipe_collection/recipe" element={<RecipeDetail/>} />

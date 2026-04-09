@@ -75,21 +75,27 @@ class AuthController extends Controller
         }
 
 
+        if($passwordValid){
+            if($user->login_attempts > 0){
+                $user->update([
+                    "login_attempts" => 0,
 
-        $accessToken = auth('api')->setTTL(config('jwt.ttl', 60))->tokenById($user->id);
-        $refreshToken = auth('api')->setTTL(config('jwt.refresh_ttl', 20160))->tokenById($user->id);
-
-
-        $accessCookie = $this->createCookie('access_token', $accessToken, 60);
-        $refreshCookie = $this->createCookie('refresh_token', $refreshToken, 20160);
-
-        return response()->json([
-            'message' => 'User login successfully',
-            'user'    => $user,
-        ], 201)->withCookie($accessCookie)->withCookie($refreshCookie)
+                ]);
+            }
+            $accessToken = auth('api')->setTTL(config('jwt.ttl', 60))->tokenById($user->id);
+            $refreshToken = auth('api')->setTTL(config('jwt.refresh_ttl', 20160))->tokenById($user->id);
 
 
-        ;
+            $accessCookie = $this->createCookie('access_token', $accessToken, 60);
+            $refreshCookie = $this->createCookie('refresh_token', $refreshToken, 20160);
+
+            return response()->json([
+                'message' => 'User login successfully',
+                'user'    => $user,
+            ], 201)->withCookie($accessCookie)->withCookie($refreshCookie);
+
+
+        }
 
 
     }

@@ -1,11 +1,12 @@
 import { useQuery } from "@tanstack/react-query"
 import { getRecipe } from "../hooks/useApi"
 import { useSearchParams, Link } from "react-router-dom"
-import { 
+import {
+    X,
+ThumbsUp,
   Clock, 
   Users, 
   ChefHat, 
-  ThumbsUp, 
   Calendar, 
   ChevronLeft,
   CookingPot,
@@ -18,15 +19,16 @@ import { Separator } from "@/components/ui/separator"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { useMutation } from "@tanstack/react-query"
-import { likeRecipe } from "../hooks/useApi"
+import RecipeLikeBtn from "../components/recipeLikeBtn"
+import SignupCard from "../components/SignupCard"
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react"
-import { useEffect } from "react"
+import { useState } from "react"
 
 
 export default function RecipeDetail() {
     const [searchParams] = useSearchParams();
+    const [message, setMessage] = useState(null);
     const id = searchParams.get("id")
 
     const { data, isLoading, error } = useQuery({
@@ -35,30 +37,20 @@ export default function RecipeDetail() {
         enabled: !!id,
     })
 
-    useEffect(() => {
-        console.log(error)
-    }, [error])
+    const isGuest = JSON.parse(sessionStorage.getItem("guest"));
 
-    useEffect(() => {
-        console.log(data
-
+    const onLike = () => {
+        setMessage(
+            <motion.div animate={{scale: [0, 1]}} className="fixed top-[50%] left-[50%] -translate-[50%] z-50 flex flex-col items-center w-full max-w-sm ">
+                
+                <SignupCard/>
+                <button onClick={() => setMessage(null)} className="absolute right-1 top-1 opacity-50 hover:opacity-70"><X/></button>
+                <Alert variant="destructive" className="max-w-2xl mt-2">
+                    <AlertTitle>Login or Sinup to continue</AlertTitle>
+                </Alert>
+            </motion.div>
         )
-    }, [data])
-
-    const likeMutation = useMutation({
-        mutationFn: (postId) => likeRecipe(postId),
-        mutationKey: ["recipe_like"],
-        onError: (e) => {
-            console.error(e.message)
-        },
-        onSuccess: (data) => {
-            console.log(data);
-        }
-    })
-
-    // useEffect(() => {
-    //     console.log(recipe?.recipe)
-    // }, [recipe])
+    }
 
     if (isLoading) {
         return <RecipeDetailSkeleton />;
@@ -113,6 +105,7 @@ export default function RecipeDetail() {
                 animate={{ opacity: 1 }}
                 className="min-h-screen bg-background pb-20 pt-10"
             >
+                {message}
                 <div className="container mx-auto px-4 max-w-5xl">
                     {/* Back Button */}
                     <Link to="/recipe_collection">
@@ -210,9 +203,18 @@ export default function RecipeDetail() {
                                             <span className="text-[10px] uppercase text-muted-foreground font-bold tracking-wider">Yield</span>
                                         </div>
                                         <div className="bg-muted/50 p-4 rounded-2xl flex flex-col items-center justify-center text-center space-y-1">
-                                            <button className="cursor-pointer active:scale-110" onClick={() => likeMutation.mutate(id)}>
+                                            {/* <button className="cursor-pointer active:scale-110" onClick={() => likeMutation.mutate(id)}>
                                                 <ThumbsUp className="w-5 h-5 text-rose-500 " />
+                                            </button> */}
+                                            {isGuest ? 
+                                            <button onClick={onLike} className="cursor-pointer active:scale-110">
+                                                <ThumbsUp className={`w-5 h-5 text-rose-500 `} />
+                                            
                                             </button>
+                                            :
+        
+                                            <RecipeLikeBtn id={id}/>
+                                            }
                                             <span className="text-sm font-semibold">{likes} Likes</span>
                                             <span className="text-[10px] uppercase text-muted-foreground font-bold tracking-wider">Community</span>
                                         </div>

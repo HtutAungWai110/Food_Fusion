@@ -6,6 +6,7 @@ export default function Pagination({currentPage, maxPage, setPage}){
 
     const range = Array.from({ length: max - min + 1 }, (_, i) => min + i);
 
+ 
     console.log(range)
     return (
         <div className="flex justify-center gap-5 m-10">

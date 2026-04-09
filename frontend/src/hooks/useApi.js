@@ -1,3 +1,6 @@
+
+
+
 async function register(formData) {
     
     const res = await fetch(`/api/auth/register`, {
@@ -53,6 +56,7 @@ async function login(formData){
 }
 
 async function proxyFetch(url, options = {}) {
+
     //Set default headers and credentials
     const defaultOptions = {
         credentials: 'include',
@@ -76,7 +80,7 @@ async function proxyFetch(url, options = {}) {
 
         if (refreshRes.ok) {
             // Refresh worked, retry the original request
-            
+         
             response = await fetch(url, defaultOptions);
         } else {
             // Both tokens failed: Wipe session and throw

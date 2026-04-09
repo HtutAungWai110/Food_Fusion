@@ -33,6 +33,7 @@ Route::prefix('recipes')->group(function () {
     Route::get('/search', [RecipesController::class, 'search']);
     Route::get("/popularRecipes", [RecipesController::class, "getPopularRecipes"]);
     Route::post("/likeRecipe", [RecipesController::class, "handleLike"])->middleware('auth');
+    Route::get("/liked", [RecipesController::class, "checkLiked"])->middleware("auth");
 });
 
 

@@ -36,9 +36,9 @@ export default function Recipes() {
   ]
 
   useEffect(() => {
-  
+    window.scrollTo({top: 0, left: 0, behavior: 'smooth'});
     queryClient.invalidateQueries({queryKey: ["recipes"]})
-  }, [cuisine, difficulty, queryClient])
+  }, [cuisine, difficulty, page, queryClient])
 
   const handleCuisineChange = (val) => {
     setCuisine(val);
