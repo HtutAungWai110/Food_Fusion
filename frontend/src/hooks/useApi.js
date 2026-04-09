@@ -60,6 +60,7 @@ async function proxyFetch(url, options = {}) {
         headers: {
             'Content-Type': 'application/json',
             ...options.headers,
+            
         },
     };
 
@@ -75,10 +76,15 @@ async function proxyFetch(url, options = {}) {
 
         if (refreshRes.ok) {
             // Refresh worked, retry the original request
+            
             response = await fetch(url, defaultOptions);
         } else {
             // Both tokens failed: Wipe session and throw
-            sessionStorage.removeItem("user_data");
+            sessionStorage.setItem("guest", JSON.stringify(true));
+            const userData = sessionStorage.getItem("user_data")
+            if (userData){
+                sessionStorage.removeItem("user_data");
+            }
             const error = await refreshRes.json();
             throw new Error(error.message || 'Session expired');
         }
@@ -94,7 +100,7 @@ async function getRecipes(cuisine, difficulty, page){
 
     if(!res.ok){
         const error = await res.json();
-        throw new Error(`Status: ${res.status}, ${error.message}`)
+        throw new Error(`${error.message}`)
     }
 
     const data = await res.json();
@@ -115,4 +121,20 @@ async function  getRecipe(id) {
     return data;
 }
 
-export {register, login, proxyFetch, getRecipes, getRecipe};
+
+async function likeRecipe(postId) {
+    const res = await proxyFetch(`/api/recipes/likeRecipe`, {
+        method: "POST",
+        body: JSON.stringify({id: postId})
+    })
+
+    if(!res.ok){
+        const error = await res.json();
+        throw new Error(`Status: ${res.status}, ${error.message}`)
+    }
+
+    const data = await res.json();
+    return data;
+}
+
+export {register, login, proxyFetch, getRecipes, getRecipe, likeRecipe};

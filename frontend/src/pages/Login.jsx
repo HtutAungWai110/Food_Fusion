@@ -31,13 +31,12 @@ export default function Login() {
   const loginMutation = useMutation({
     mutationFn: (formData) => login(formData),
     onSuccess: (data) => {
+      sessionStorage.removeItem("guest");
       setMessage(<MessageBox status={"success"} message={data.message}/>)
       buttonRef.current.disabled = true;
+      navigate('/', { replace: false, state: null });
+      window.location.reload();
 
-      setTimeout(() => {
-          navigate('/', { replace: false, state: null });
-          window.location.reload();
-      }, 1000);
       
       
     },

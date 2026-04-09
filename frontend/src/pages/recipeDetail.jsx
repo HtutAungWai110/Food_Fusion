@@ -18,9 +18,12 @@ import { Separator } from "@/components/ui/separator"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { useMutation } from "@tanstack/react-query"
+import { likeRecipe } from "../hooks/useApi"
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react"
 import { useEffect } from "react"
+
 
 export default function RecipeDetail() {
     const [searchParams] = useSearchParams();
@@ -41,6 +44,17 @@ export default function RecipeDetail() {
 
         )
     }, [data])
+
+    const likeMutation = useMutation({
+        mutationFn: (postId) => likeRecipe(postId),
+        mutationKey: ["recipe_like"],
+        onError: (e) => {
+            console.error(e.message)
+        },
+        onSuccess: (data) => {
+            console.log(data);
+        }
+    })
 
     // useEffect(() => {
     //     console.log(recipe?.recipe)
@@ -72,6 +86,7 @@ export default function RecipeDetail() {
     if(data){
 
         const {
+            id,
             title,
             description,
             cuisine,
@@ -195,7 +210,9 @@ export default function RecipeDetail() {
                                             <span className="text-[10px] uppercase text-muted-foreground font-bold tracking-wider">Yield</span>
                                         </div>
                                         <div className="bg-muted/50 p-4 rounded-2xl flex flex-col items-center justify-center text-center space-y-1">
-                                            <ThumbsUp className="w-5 h-5 text-rose-500 fill-rose-500/20" />
+                                            <button className="cursor-pointer active:scale-110" onClick={() => likeMutation.mutate(id)}>
+                                                <ThumbsUp className="w-5 h-5 text-rose-500 " />
+                                            </button>
                                             <span className="text-sm font-semibold">{likes} Likes</span>
                                             <span className="text-[10px] uppercase text-muted-foreground font-bold tracking-wider">Community</span>
                                         </div>

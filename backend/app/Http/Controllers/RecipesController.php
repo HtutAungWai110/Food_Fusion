@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Recipe;
+use App\Models\RecipeLikes;
+use Illuminate\Support\Str;
 
 class RecipesController extends Controller
 {
@@ -53,4 +55,70 @@ class RecipesController extends Controller
             ], 500);
         }
     }
+
+    public function getPopularRecipes(Request $req){
+        try {
+            $recipes = Recipe::orderBy("likes", 'desc')->limit(5)->get();
+
+            return response()->json( $recipes,200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to fetch resources'
+            ], 500);
+        }
+    }
+
+    public function handleLike(Request $req)
+    {
+        $userId = $req->attributes->get('user_id');
+        $postId = $req->input('id');
+
+
+        if (!$postId) {
+            return response()->json([
+                'message' => 'post_id is required'
+            ], 400);
+        }
+
+        try {
+            $recipe = Recipe::find($postId);
+            if (!$recipe) {
+                return response()->json([
+                    'message' => 'Recipe not found'
+                ], 404);
+            }
+
+            $existingLike = RecipeLikes::where('user_id', $userId)
+                ->where('post_id', $postId)
+                ->first();
+
+            if ($existingLike) {
+                $existingLike->delete();
+                $recipe->decrement('likes');
+                return response()->json([
+                    'message' => 'Like removed',
+                    'liked' => false
+                ], 200);
+            } else {
+                RecipeLikes::create([
+                    'id' => Str::uuid()->toString(),
+                    'user_id' => $userId,
+                    'post_id' => $postId,
+                ]);
+                $recipe->increment('likes');
+            return response()->json([
+                    'message' => 'Like added',
+                    'liked' => true
+                ], 201);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to process like'
+            ], 500);
+        }
+
+
+    }
+
+
 }

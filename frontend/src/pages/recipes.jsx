@@ -38,12 +38,16 @@ export default function Recipes() {
   useEffect(() => {
   
     queryClient.invalidateQueries({queryKey: ["recipes"]})
-  }, [cuisine, difficulty, queryClient, page])
-
-  useEffect(() => {
-    setPage(1);
-    queryClient.invalidateQueries({queryKey: ["recipes"]})
   }, [cuisine, difficulty, queryClient])
+
+  const handleCuisineChange = (val) => {
+    setCuisine(val);
+    setPage(1);
+  } 
+  const handleDifficultyChange = (val) => {
+    setDifficulty(val);
+    setPage(1);
+  } 
 
   const container = {
     hidden: { opacity: 0 },
@@ -100,7 +104,7 @@ export default function Recipes() {
       <div className="flex justify-end items-center gap-2 m-5">
         <div className="flex gap-1 items-center">
         <label>Cuisine: </label>
-        <Combobox items={cuisines} value={cuisine} onValueChange={setCuisine}>
+        <Combobox items={cuisines} value={cuisine} onValueChange={handleCuisineChange}>
         <ComboboxInput/>
         <ComboboxContent>
             <ComboboxEmpty>No items found.</ComboboxEmpty>
@@ -117,7 +121,7 @@ export default function Recipes() {
 
         <div className="flex gap-1 items-center">
         <label>Difficulty: </label>
-        <Combobox items={difficulties} value={difficulty} onValueChange={setDifficulty}>
+        <Combobox items={difficulties} value={difficulty} onValueChange={handleDifficultyChange}>
         <ComboboxInput/>
         <ComboboxContent>
             <ComboboxEmpty>No items found.</ComboboxEmpty>

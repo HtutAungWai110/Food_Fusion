@@ -10,20 +10,31 @@ import RecipeDetail from "./pages/recipeDetail"
 
 import { ThemeProvider } from "./components/theme-provider"
 import { useEffect } from "react"
-import {useDispatch} from "react-redux"
+import {useDispatch, useSelector} from "react-redux"
 import { getUser } from "./states/UserState"
+import { Spinner } from "@/components/ui/spinner"
 
 
 function App() {
  
 
   const dispatch = useDispatch();
+  const {data, loading, error} = useSelector((state) => state.user); 
 
   useEffect(() => {
     dispatch(getUser())
   }, [dispatch])
 
   
+
+  if(!data && loading){
+    return (
+    <div className="absolute top-[50%] left-[50%] -translate-[50%]">
+      <Spinner className="scale-200"/>
+    </div>
+    )
+  }
+
 
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">

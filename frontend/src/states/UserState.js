@@ -4,7 +4,9 @@ import { proxyFetch } from "../hooks/useApi";
 export const getUser = createAsyncThunk(
     'user/getUser',
     async (_, { rejectWithValue }) => {
-        const userData = JSON.parse(sessionStorage.getItem("user_data"))
+        const userData = JSON.parse(sessionStorage.getItem("user_data"));
+        const isGuest = JSON.parse(sessionStorage.getItem("guest"));
+        if(isGuest) return null;
         if (userData){
             return userData;
         } else {
@@ -16,6 +18,7 @@ export const getUser = createAsyncThunk(
             const data = await res.json();
 
             if (!res.ok) {
+                
                 return rejectWithValue(data.message || 'Failed to fetch user');
             }
             sessionStorage.setItem("user_data", JSON.stringify(data.user));

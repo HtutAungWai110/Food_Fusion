@@ -4,6 +4,7 @@ import { JoinusCard } from "../components/JoinusCard";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react"
 import { useSelector } from "react-redux";
+import FeturedRecipes from "../components/feturedRecipes";
   
 
 export default function Home() {
@@ -35,6 +36,14 @@ export default function Home() {
           <p className="text-muted-foreground mt-2">Join our hands-on workshops and feast events</p>
         </div>
         <CarouselEvents />
+      </section>
+
+      <section className="space-y-8">
+        <div className="text-center">
+          <h2 className="text-3xl font-semibold text-orange-500">Popular recipes</h2>
+          <p className="text-muted-foreground mt-2">Join our hands-on workshops and feast events</p>
+        </div>
+        <FeturedRecipes />
       </section>
     </div>
     </motion.div>
