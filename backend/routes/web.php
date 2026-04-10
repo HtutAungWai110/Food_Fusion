@@ -19,6 +19,9 @@ Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/refresh-token', [AuthController::class, 'refreshToken']);
+    Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+    Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+    Route::post('/check-reset-session', [AuthController::class, 'checkResetSessoin']);
 
 });
 

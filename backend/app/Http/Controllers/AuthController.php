@@ -7,6 +7,10 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
+use App\Models\PasswordResetToken;
+use App\Mail\PasswordResetEmail;
 use Carbon\Carbon;
 
 class AuthController extends Controller
@@ -102,7 +106,7 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        // 1. Validation (Like using Joi or Zod in Express)
+
         $validator = Validator::make($request->all(), [
             'firstname' => 'required|string|max:255',
             'lastname'  => 'required|string|max:255',
@@ -210,7 +214,177 @@ class AuthController extends Controller
         );
     }
 
+    /**
+     * Send password reset link to user's email.
+     */
+    public function forgotPassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|string|email',
+        ]);
 
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $email = $request->input('email');
+        $user = User::where('email', $email)->first();
+
+        // Always return success to prevent email enumeration
+        if (!$user) {
+            return response()->json([
+                'message' => 'User does not exist with this email',
+            ], 404);
+        }
+
+        // Delete any existing reset tokens for this email
+        PasswordResetToken::deleteByEmail($email);
+
+        // Generate a secure random token
+        $plainToken = Str::random(64);
+
+        // Store hashed token in database
+        PasswordResetToken::create([
+            'email' => $email,
+            'token' => Hash::make($plainToken),
+            'created_at' => now(),
+            'expires_at' => now()->addHour(),
+        ]);
+
+        // Send email with the plain token (not hashed)
+        Mail::to($email)->send(new PasswordResetEmail($email, $plainToken));
+
+        return response()->json([
+            'message' => "A password reset link has been sent.",
+        ], 200);
+    }
+
+    /**
+     * Reset user password using token from email.
+     */
+    public function resetPassword(Request $request)
+    {
+        // Get token and email from query params or body
+        $token = $request->input('token') ?? $request->query('token');
+        $email = $request->input('email') ?? $request->query('email');
+        $password = $request->input('password');
+
+        $validator = Validator::make([
+            'token' => $token,
+            'email' => $email,
+            'password' => $password,
+        ], [
+            'token' => 'required|string',
+            'email' => 'required|string|email',
+            'password' => 'required|string|min:8',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Find the reset token record
+        $resetToken = PasswordResetToken::where('email', $email)->first();
+
+        if (!$resetToken) {
+            return response()->json([
+                'message' => 'Invalid or expired password reset token.',
+            ], 400);
+        }
+
+        // Check if token is expired
+        if ($resetToken->isExpired()) {
+            PasswordResetToken::deleteByEmail($email);
+            return response()->json([
+                'message' => 'Password reset token has expired. Please request a new one.',
+            ], 400);
+        }
+
+        // Verify the token hash
+        if (!Hash::check($token, $resetToken->token)) {
+            return response()->json([
+                'message' => 'Invalid password reset token.',
+            ], 400);
+        }
+
+        // Find user and update password
+        $user = User::where('email', $email)->first();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'User not found.',
+            ], 404);
+        }
+
+        // Update password
+        $user->password = Hash::make($password);
+        $user->save();
+
+        // Delete used token
+        PasswordResetToken::deleteByEmail($email);
+
+        // Reset login attempts and lockout if any
+        $user->update([
+            'login_attempts' => 0,
+            'lockout_until' => null,
+        ]);
+
+        return response()->json([
+            'message' => 'Password has been reset successfully.',
+        ], 200);
+    }
+
+    public function checkResetSessoin(Request $request){
+        $token = $request->input('token') ?? $request->query('token');
+        $email = $request->input('email') ?? $request->query('email');
+
+           $validator = Validator::make([
+            'token' => $token,
+            'email' => $email,
+        ], [
+            'token' => 'required|string',
+            'email' => 'required|string|email',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $resetToken = PasswordResetToken::where('email', $email)->first();
+
+        if (!$resetToken) {
+            return response()->json([
+                'message' => 'Invalid or expired password reset token.',
+            ], 400);
+        }
+
+        if ($resetToken->isExpired()) {
+            PasswordResetToken::deleteByEmail($email);
+            return response()->json([
+                'message' => 'Password reset token has expired. Please request a new one.',
+            ], 400);
+        }
+
+
+        if (!Hash::check($token, $resetToken->token)) {
+            return response()->json([
+                'message' => 'Invalid password reset token.',
+            ], 400);
+        }
+
+        return response()->json([
+            "tokenValid" => true
+        ], 200);
+    }
 
 
 }

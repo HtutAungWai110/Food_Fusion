@@ -10,13 +10,14 @@ import { motion } from "motion/react";
 
 export default function MessageBox({status, message}){
     return (
-        <motion.div animate={{ opacity: [0, 1], transition: { duration: 1 } }}>
+        <motion.div>
           <Alert>
             {status === "error" ?  <AlertOctagon/> : <CheckCircle/>}
             <AlertTitle>{status === "error" ? "Warning!": "Success!"}</AlertTitle>
             <AlertDescription className={status === "error" ? "text-red-500" : "text-green-500"}>
               {message}
             </AlertDescription>
+            
           </Alert>
         </motion.div>
     )

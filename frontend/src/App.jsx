@@ -7,6 +7,8 @@ import Login from "./pages/Login"
 import Signup from "./pages/Signup"
 import Recipes from "./pages/recipes"
 import RecipeDetail from "./pages/recipeDetail"
+import ForgotPasswordPage from "./pages/forgotPassword"
+import ResetPassword from "./pages/resetPassword"
 
 import { ThemeProvider } from "./components/theme-provider"
 import { useEffect } from "react"
@@ -15,6 +17,7 @@ import { getUser } from "./states/UserState"
 import { Spinner } from "@/components/ui/spinner"
 import PublicRoute from "./lib/PublicRoute"
 import ProtectedRoute from "./lib/ProtectedRoute"
+
 
 
 function App() {
@@ -53,6 +56,8 @@ function App() {
             <Route path="/profile" element={<div>Profile</div>}/>
           </Route>
           
+          <Route path="/forgot-password" element={<ForgotPasswordPage/>}/>
+          <Route path="/reset-password" element={<ResetPassword/>}/>
           
           <Route path="/about_us" element={<h1>About us</h1>} />
           <Route path="/recipe_collection" element={<Recipes/>} />

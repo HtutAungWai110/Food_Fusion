@@ -16,16 +16,23 @@ import { motion } from "motion/react";
 import { useMutation } from "@tanstack/react-query";
 import { login } from "../hooks/useApi";
 import { useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
 
 
 export default function Login() {
   const { register, formState: { errors }, handleSubmit } = useForm();
 
   const [isLoading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const buttonRef = useRef(null);
 
   const navigate = useNavigate();
   const [message, setMessage] = useState(null);
+
+  const genericPattern = {
+    value: /^[\u0020-\u007E\u00A0-\u00FF\u0100-\u017F]*$/,
+    message: "Emojis and unusual characters are not allowed"
+  };
 
   
   const loginMutation = useMutation({
@@ -90,14 +97,24 @@ export default function Login() {
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-medium">Password</label>
                 </div>
-                <input
-                  className="border-b-[2px] p-[10px_0px] outline-none focus:border-b-orange-500 bg-transparent"
-                  type="password"
-                  placeholder="Type your password"
-                  {...register("password", {
-                    required: "Password is required"
-                  })}
-                />
+                <div className="relative flex items-center">
+                  <input
+                    className="border-b-[2px] p-[10px_30px_10px_0px] outline-none focus:border-b-orange-500 bg-transparent w-full"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Type your password"
+                    {...register("password", {
+                      required: "Password is required",
+                      pattern: genericPattern
+                    })}
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-0 opacity-50 hover:opacity-100 transition-opacity"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
                 {errors.password && (
                   <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
                 )}
@@ -113,6 +130,13 @@ export default function Login() {
                 Don't have an account?{" "}
                 <Link to="/signup" className="text-orange-500 hover:underline font-semibold" >
                   Sign up
+                </Link>
+              </p>
+
+              <p className="text-center text-sm">
+                Forgot password?{" "}
+                <Link to="/forgot-password" className="text-orange-500 hover:underline font-semibold" >
+                  Reset password
                 </Link>
               </p>
             </div>

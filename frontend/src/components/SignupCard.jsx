@@ -13,16 +13,28 @@ import { register as registerUserApi } from "../hooks/useApi";
 
 import { Spinner } from "@/components/ui/spinner"
 import { useState, useRef } from "react";
-import { XIcon } from "lucide-react";
+import { XIcon, Eye, EyeOff } from "lucide-react";
 import MessageBox from "./messageBox";
 import SignupMessage from "./SignupSuccessful";
 
 export default function SignupCard({ isPopup = false, onClose }) {
-  const { register, formState: { errors }, handleSubmit } = useForm();
+  const { register, formState: { errors }, handleSubmit, watch } = useForm();
   const [errorState, setErrorState] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const buttonRef = useRef(null);
+
+  const namePattern = {
+    value: /^[a-zA-Z\u00C0-\u017F\s\-']+$/,
+    message: "Unusual characters or emojis are not allowed"
+  };
+
+  const genericPattern = {
+    value: /^[\u0020-\u007E\u00A0-\u00FF\u0100-\u017F]*$/,
+    message: "Emojis and unusual characters are not allowed"
+  };
 
   const registerMutation = useMutation({
     mutationFn: (formData) => registerUserApi(formData),
@@ -86,7 +98,8 @@ export default function SignupCard({ isPopup = false, onClose }) {
                   minLength: {
                     value: 2,
                     message: "Firstname is too short"
-                  }
+                  },
+                  pattern: namePattern
                 })}
               />
               {errors.firstname && (
@@ -105,7 +118,8 @@ export default function SignupCard({ isPopup = false, onClose }) {
                   minLength: {
                     value: 2,
                     message: "Lastname is too short"
-                  }
+                  },
+                  pattern: namePattern
                 })}
               />
               {errors.lastname && (
@@ -134,20 +148,55 @@ export default function SignupCard({ isPopup = false, onClose }) {
 
             <div className="grid gap-1">
               <label className="text-sm font-medium">Password</label>
-              <input
-                className="border-b-[2px] p-[10px_0px] outline-none focus:border-b-orange-500 bg-transparent"
-                type="password"
-                placeholder="Type your password"
-                {...register("password", {
-                  required: "Password is required",
-                  minLength: {
-                    value: 8,
-                    message: "Password must be at least 8 characters long"
-                  }
-                })}
-              />
+              <div className="relative flex items-center">
+                <input
+                  className="border-b-[2px] p-[10px_30px_10px_0px] outline-none focus:border-b-orange-500 bg-transparent w-full"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Type your password"
+                  {...register("password", {
+                    required: "Password is required",
+                    minLength: {
+                      value: 8,
+                      message: "Password must be at least 8 characters long"
+                    },
+                    pattern: genericPattern
+                  })}
+                />
+                <button
+                  type="button"
+                  className="absolute right-0 opacity-50 hover:opacity-100 transition-opacity"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
               {errors.password && (
                 <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
+              )}
+            </div>
+
+            <div className="grid gap-1">
+              <label className="text-sm font-medium">Confirm Password</label>
+              <div className="relative flex items-center">
+                <input
+                  className="border-b-[2px] p-[10px_30px_10px_0px] outline-none focus:border-b-orange-500 bg-transparent w-full"
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="Re-type your password"
+                  {...register("confirmPassword", {
+                    required: "Please confirm your password",
+                    validate: (val) => val === watch('password') || "Passwords do not match"
+                  })}
+                />
+                <button
+                  type="button"
+                  className="absolute right-0 opacity-50 hover:opacity-100 transition-opacity"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+              {errors.confirmPassword && (
+                <p className="text-red-500 text-xs mt-1">{errors.confirmPassword.message}</p>
               )}
             </div>
           </div>

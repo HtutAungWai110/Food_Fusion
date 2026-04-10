@@ -19,6 +19,7 @@ import { Separator } from "@/components/ui/separator"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import MessageBox from "../components/messageBox"
 import RecipeLikeBtn from "../components/recipeLikeBtn"
 import SignupCard from "../components/SignupCard"
 // eslint-disable-next-line no-unused-vars
@@ -45,9 +46,7 @@ export default function RecipeDetail() {
                 
                 <SignupCard/>
                 <button onClick={() => setMessage(null)} className="absolute right-1 top-1 opacity-50 hover:opacity-70"><X/></button>
-                <Alert variant="destructive" className="max-w-2xl mt-2">
-                    <AlertTitle>Login or Sinup to continue</AlertTitle>
-                </Alert>
+                <MessageBox status={"error"} message={"Login or signup for this action"}/>
             </motion.div>
         )
     }
@@ -213,7 +212,7 @@ export default function RecipeDetail() {
                                             </button>
                                             :
         
-                                            <RecipeLikeBtn id={id}/>
+                                            <RecipeLikeBtn id={id} setMessage={setMessage}/>
                                             }
                                             <span className="text-sm font-semibold">{likes} Likes</span>
                                             <span className="text-[10px] uppercase text-muted-foreground font-bold tracking-wider">Community</span>
