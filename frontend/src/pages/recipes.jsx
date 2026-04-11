@@ -10,8 +10,9 @@ import {
   ComboboxItem,
   ComboboxList,
 } from "@/components/ui/combobox"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import Pagination from "../components/pagination"
+import { Search } from "lucide-react"
 
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react"
@@ -20,11 +21,14 @@ export default function Recipes() {
   const [cuisine, setCuisine] = useState("All");
   const [difficulty, setDifficulty] = useState("Any");
   const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
   const queryClient = useQueryClient();
+
+  const timeoutRef = useRef(null);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["recipes"],
-    queryFn: () => getRecipes(cuisine, difficulty, page),
+    queryFn: () => getRecipes(cuisine, difficulty, page, search),
   })
 
   const cuisines = [
@@ -48,6 +52,20 @@ export default function Recipes() {
     setDifficulty(val);
     setPage(1);
   } 
+
+
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value.trim());
+    if(timeoutRef.current){
+      clearTimeout(timeoutRef.current);
+    }
+
+    timeoutRef.current = setTimeout(() => {
+      setPage(1);
+      queryClient.invalidateQueries({queryKey: ["recipes"]})
+    }, 500);
+
+  }
 
   const container = {
     hidden: { opacity: 0 },
@@ -101,43 +119,61 @@ export default function Recipes() {
         </p>
       </div>
 
-      <div className="flex justify-end items-center gap-2 m-5">
-        <div className="flex gap-1 items-center">
-        <label>Cuisine: </label>
-        <Combobox items={cuisines} value={cuisine} onValueChange={handleCuisineChange}>
-        <ComboboxInput/>
-        <ComboboxContent>
-            <ComboboxEmpty>No items found.</ComboboxEmpty>
-            <ComboboxList>
-              {(item) => (
-                <ComboboxItem key={item} value={item}>
-                  {item}
-                </ComboboxItem>
-              )}
-            </ComboboxList>
-          </ComboboxContent>
-        </Combobox>
+        <div className="p-2 flex sm:flex-row sm:justify-between sm:items-center m-[10px_0px] flex-col justify-start items-start">
+          <div className="relative flex items-center sm:w-[30%]">
+    
+            <div className="absolute left-3 flex items-center pointer-events-none">
+              <Search className="h-5 w-5 text-gray-400" />
+            </div>
+
+
+            <input
+              type="text"
+              className="border rounded-xl p-2 pl-10 w-full" 
+              placeholder="Search recipe"
+              value={search}
+              onChange={handleSearchChange}
+            />
+          </div>
+          
+          <div className="flex justify-end items-center gap-2 sm:w-[50%]">
+            <div className="flex gap-1 items-center">
+            <label>Cuisine: </label>
+            <Combobox items={cuisines} value={cuisine} onValueChange={handleCuisineChange}>
+            <ComboboxInput/>
+            <ComboboxContent>
+                <ComboboxEmpty>No items found.</ComboboxEmpty>
+                <ComboboxList>
+                  {(item) => (
+                    <ComboboxItem key={item} value={item}>
+                      {item}
+                    </ComboboxItem>
+                  )}
+                </ComboboxList>
+              </ComboboxContent>
+            </Combobox>
+            </div>
+
+            <div className="flex gap-1 items-center">
+            <label>Difficulty: </label>
+            <Combobox items={difficulties} value={difficulty} onValueChange={handleDifficultyChange}>
+            <ComboboxInput/>
+            <ComboboxContent>
+                <ComboboxEmpty>No items found.</ComboboxEmpty>
+                <ComboboxList>
+                  {(item) => (
+                    <ComboboxItem key={item} value={item}>
+                      {item}
+                    </ComboboxItem>
+                  )}
+                </ComboboxList>
+              </ComboboxContent>
+            </Combobox>
+            </div>
+          </div>
         </div>
 
-        <div className="flex gap-1 items-center">
-        <label>Difficulty: </label>
-        <Combobox items={difficulties} value={difficulty} onValueChange={handleDifficultyChange}>
-        <ComboboxInput/>
-        <ComboboxContent>
-            <ComboboxEmpty>No items found.</ComboboxEmpty>
-            <ComboboxList>
-              {(item) => (
-                <ComboboxItem key={item} value={item}>
-                  {item}
-                </ComboboxItem>
-              )}
-            </ComboboxList>
-          </ComboboxContent>
-        </Combobox>
-        </div>
-      </div>
-
-      <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 justify-items-center">
+      <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
         {data?.data?.map((recipe) => (
           <RecipeCard key={recipe.id} recipe={recipe} />
         ))}
