@@ -97,8 +97,8 @@ async function proxyFetch(url, options = {}) {
     return response;
 }
 
-async function getRecipes(cuisine, difficulty, page){
-    const res = await fetch(`/api/recipes?cuisine=${encodeURI(cuisine)}&difficulty=${encodeURI(difficulty)}&page=${page}`, {
+async function getRecipes(cuisine, difficulty, page, search){
+    const res = await fetch(`/api/recipes?cuisine=${encodeURI(cuisine)}&difficulty=${encodeURI(difficulty)}&page=${page}&title=${search}`, {
         method: "GET"
     });
 
