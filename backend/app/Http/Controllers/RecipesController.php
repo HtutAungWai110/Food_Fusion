@@ -15,6 +15,7 @@ class RecipesController extends Controller
     {
         $cuisine = $req->query('cuisine');
         $difficulty = $req->query('difficulty');
+        $title = $req->query('title');
 
         try {
             $query = Recipe::query();
@@ -25,6 +26,10 @@ class RecipesController extends Controller
 
             if ($difficulty && $difficulty !== 'Any') {
                 $query->where('difficulty', $difficulty);
+            }
+
+            if ($title && trim($title) !== '') {
+                $query->whereRaw("MATCH(title) AGAINST(? IN NATURAL LANGUAGE MODE)", [$title]);
             }
 
             return response()->json($query->paginate(12));
