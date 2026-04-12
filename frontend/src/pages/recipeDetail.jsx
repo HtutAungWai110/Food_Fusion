@@ -88,7 +88,7 @@ export default function RecipeDetail() {
             likes,
             ingredients = [],
             detailed_instruction,
-            image_path,
+            image_url,
             created_at,
         } = data;
 
@@ -144,7 +144,7 @@ export default function RecipeDetail() {
                             {/* Featured Image */}
                             <div className="relative aspect-video rounded-3xl overflow-hidden shadow-2xl border-4 border-background ring-1 ring-orange-100/50">
                                 <img
-                                    src={image_path || `https://placehold.co/1200x800?text=${encodeURIComponent(title)}`}
+                                    src={image_url || `https://placehold.co/1200x800?text=${encodeURIComponent(title)}`}
                                     alt={title}
                                     className="w-full h-full object-cover"
                                 />

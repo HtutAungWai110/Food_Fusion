@@ -51,7 +51,7 @@ export default function RecipeCard({ recipe }) {
     likes,
     ingredients = [],
     instructions = [],
-    image_path,
+    image_url,
     created_at,
   } = recipe;
 
@@ -74,7 +74,7 @@ export default function RecipeCard({ recipe }) {
         {/* Recipe Image Placeholder or Real Image */}
         <div className="relative aspect-video overflow-hidden">
           <img
-            src={image_path || `https://placehold.co/600x400?text=${encodeURIComponent(title)}`}
+            src={image_url || `https://placehold.co/600x400?text=${encodeURIComponent(title)}`}
             alt={title}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           />

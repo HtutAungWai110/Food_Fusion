@@ -18,9 +18,9 @@ import { Search } from "lucide-react"
 import { motion } from "motion/react"
 
 export default function Recipes() {
-  const [cuisine, setCuisine] = useState("All");
-  const [difficulty, setDifficulty] = useState("Any");
-  const [page, setPage] = useState(1);
+  const [cuisine, setCuisine] = useState( JSON.parse(sessionStorage.getItem("cuisine")) || "All");
+  const [difficulty, setDifficulty] = useState( JSON.parse(sessionStorage.getItem("difficulty")) || "Any");
+  const [page, setPage] = useState( JSON.parse(sessionStorage.getItem("page")) || 1);
   const [search, setSearch] = useState("");
   const queryClient = useQueryClient();
 
@@ -30,6 +30,12 @@ export default function Recipes() {
     queryKey: ["recipes"],
     queryFn: () => getRecipes(cuisine, difficulty, page, search),
   })
+
+  useEffect(() => {
+    sessionStorage.setItem("cuisine", JSON.stringify(cuisine));
+    sessionStorage.setItem("difficulty", JSON.stringify(difficulty));
+    sessionStorage.setItem("page", JSON.stringify(page));
+  }, [cuisine, difficulty, page])
 
   const cuisines = [
     "All", "Thai", "Italian", "Indian", "Japanese", "Mexican", "Chinese", "Mediterranean"

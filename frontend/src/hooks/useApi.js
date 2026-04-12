@@ -85,10 +85,6 @@ async function proxyFetch(url, options = {}) {
         } else {
             // Both tokens failed: Wipe session and throw
             sessionStorage.setItem("guest", JSON.stringify(true));
-            const userData = sessionStorage.getItem("user_data")
-            if (userData){
-                sessionStorage.removeItem("user_data");
-            }
             const error = await refreshRes.json();
             throw new Error(error.message || 'Session expired');
         }

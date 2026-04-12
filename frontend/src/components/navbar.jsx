@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+
 import { useLocation, NavLink } from "react-router-dom"
 // eslint-disable-next-line no-unused-vars
 import { easeIn, easeInOut, motion } from "motion/react"
@@ -20,9 +20,6 @@ export default function Navbar(){
         return location.pathname === path ? "active": ""
     }
 
-    useEffect(() => {
-        console.log(data);
-    }, [data])
 
     return (
         

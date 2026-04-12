@@ -88,4 +88,18 @@ class Recipe extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    protected $appends = ['image_url'];
+
+    public function getImageUrlAttribute()
+        {
+
+            if ($this->image_path) {
+                return url('storage/' . $this->image_path);
+            }
+            return null;
+        }
+
+    // In your User Model
+
 }

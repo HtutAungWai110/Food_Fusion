@@ -4,12 +4,9 @@ import { proxyFetch } from "../hooks/useApi";
 export const getUser = createAsyncThunk(
     'user/getUser',
     async (_, { rejectWithValue }) => {
-        const userData = JSON.parse(sessionStorage.getItem("user_data"));
+    
         const isGuest = JSON.parse(sessionStorage.getItem("guest"));
         if(isGuest) return null;
-        if (userData){
-            return userData;
-        } else {
             try {
             const res = await proxyFetch('/api/user/info', {
                 method: "GET",
@@ -28,7 +25,7 @@ export const getUser = createAsyncThunk(
             }
         }
         
-    }
+    
 );
 
 const userSlice = createSlice({
