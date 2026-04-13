@@ -2,14 +2,17 @@ import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Heart, MessageCircle, Share2, UserCircle, X } from "lucide-react"
 import PostLikeBtn from "./postLikeBtn"
-import { memo } from "react"
+import { memo, useState } from "react"
 import SignupCard from "./SignupCard"
-import MessageBox from "./messageBox"
+import { Link } from "react-router-dom"
+import CommentInput from "./commentInput"
+import CommentWrapper from "./commentsWrapper"
 // eslint-disable-next-line no-unused-vars
-import { motion } from "motion/react"
+import { motion, AnimatePresence } from "motion/react"
 
 function PostCard({ post, setMessage }) {
-  const { user, post_description, image_path, likes, created_at, id } = post;
+  const { user, post_description, image_url, likes, created_at, id } = post;
+  const [showingComments, setShowingComments] = useState(false);
 
   // Format date to locale string
   const date = new Date(created_at).toLocaleDateString(undefined, {
@@ -24,13 +27,12 @@ function PostCard({ post, setMessage }) {
                 
                 <SignupCard/>
                 <button onClick={() => setMessage(null)} className="absolute right-1 top-1 opacity-50 hover:opacity-70"><X/></button>
-                <MessageBox status={"error"} message={"Login or signup for this action"}/>
+               
             </motion.div>
         )
   }
 
-  const isGuest = JSON.parse(localStorage.getItem("guest"));
-  
+  const isGuest = JSON.parse(sessionStorage.getItem("guest"));
 
   return (
     <motion.div
@@ -59,43 +61,75 @@ function PostCard({ post, setMessage }) {
             {post_description}
           </p>
           
-          {image_path && (
+          {image_url && (
             <div className="rounded-xl overflow-hidden border border-border/50">
               <img 
-                src={image_path} 
+                src={image_url} 
                 alt="Post content" 
-                className="w-full h-auto object-cover max-h-[500px]" 
+                className="w-full h-auto " 
               />
             </div>
           )}
         </CardContent>
 
-        <CardFooter className="flex items-center justify-between border-t bg-muted/20 py-1.5 px-4 rounded-b-xl">
-          <div className="flex items-center gap-1">
+        <CardFooter className="border-t bg-muted/20 py-1.5 px-4 rounded-b-xl flex flex-col">
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-1">
 
-            { isGuest ? 
+              { isGuest ? 
 
-            <Button onClick={onLike} variant="ghost" size="sm" className="hover:text-rose-500 gap-1.5 px-2 h-9">
-              <Heart className="w-4 h-4" />
-              <span className="text-xs font-semibold">{likes}</span>
-            </Button>
-            :
-            <PostLikeBtn id={id} setMessage={setMessage}>
-              <span className="text-xs font-semibold">{likes}</span>
-            </PostLikeBtn>
-            }
+              <Button onClick={onLike} variant="ghost" size="sm" className="hover:text-rose-500 gap-1.5 px-2 h-9">
+                <Heart className="w-4 h-4" />
+                <span className="text-xs font-semibold">{likes}</span>
+              </Button>
+              :
+              <PostLikeBtn id={id} setMessage={setMessage}>
+                <span className="text-xs font-semibold">{likes}</span>
+              </PostLikeBtn>
+              }
+              
+              
+              <Button onClick={() => setShowingComments(prev => !prev)} variant="ghost" size="sm" className={`hover:text-blue-500 gap-1.5 px-2 h-9 ${showingComments ? "text-blue-500" : ""}`}>
+                <MessageCircle className="w-4 h-4" />
+                <span className="text-xs font-semibold">Comment</span>
+              </Button>
+            </div>
             
-            
-            <Button variant="ghost" size="sm" className="hover:text-blue-500 gap-1.5 px-2 h-9">
-              <MessageCircle className="w-4 h-4" />
-              <span className="text-xs font-semibold">Comment</span>
+
+            <Button variant="ghost" size="sm" className="hover:text-green-500 px-2 h-9">
+              <Share2 className="w-4 h-4 mr-1.5" />
+              <span className="text-xs font-semibold">Share</span>
             </Button>
           </div>
 
-          <Button variant="ghost" size="sm" className="hover:text-green-500 px-2 h-9">
-            <Share2 className="w-4 h-4 mr-1.5" />
-            <span className="text-xs font-semibold">Share</span>
-          </Button>
+          <AnimatePresence>
+          {
+            showingComments && 
+            <motion.div 
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="w-full overflow-hidden"
+            >
+              <div className="mt-4 pt-4 border-t space-y-4 p-5">
+                {/* Comments Display List */}
+                <CommentWrapper postId={id}/>
+                {/* New Comment Input */}
+             
+              {
+                isGuest ?
+                <div className="text-center p-5">
+                  <Link className="font-bold text-orange-500" to={'/login'}>Login</Link> or <Link className="font-bold text-orange-500" to={'/signup'}>Signup</Link> to post a comment.
+                </div>
+                :
+                
+                <CommentInput postId={id}/>
+              }
+              </div>
+            </motion.div>
+          }
+          </AnimatePresence>
+
         </CardFooter>
       </Card>
     </motion.div>

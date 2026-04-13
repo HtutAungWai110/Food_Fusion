@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->integer("login_attempts")->default(0);
+            $table->string("image_path")->nullable()->default(null);
 
             // // 2. Use 'dateTime' or 'timestamp' for lockouts (Date only stores YYYY-MM-DD)
             $table->timestamp("lockout_until")->nullable()->default(null);

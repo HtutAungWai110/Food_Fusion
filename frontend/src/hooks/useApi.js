@@ -152,6 +152,21 @@ async function likePost(postId) {
     return data;
 }
 
+async function postComment(newComment, postId) {
+    const res = await proxyFetch(`/api/community_cookbook/postComment`, {
+        method: "POST",
+        body: JSON.stringify({id: postId, comment: newComment})
+    })
+
+    if(!res.ok){
+        const error = await res.json();
+        throw new Error(`Status: ${res.status}, ${error.message}`)
+    }
+
+    const data = await res.json();
+    return data;
+}
+
 async function getPosts(page) {
     const res = await fetch(`/api/community_cookbook/getPosts?page=${page}`, {
         method: "GET"
@@ -166,4 +181,4 @@ async function getPosts(page) {
     return data;
 }
 
-export {register, login, proxyFetch, getRecipes, getRecipe, likeRecipe, likePost, getPosts};
+export {register, login, proxyFetch, getRecipes, getRecipe, likeRecipe, likePost, getPosts, postComment};

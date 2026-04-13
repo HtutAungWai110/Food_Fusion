@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { getPosts } from "../hooks/useApi"
-import { useState } from "react"
+import {  useEffect, useState } from "react"
 import PostCard from "../components/postCard"
 import Pagination from "../components/pagination"
 import { Spinner } from "@/components/ui/spinner"
@@ -21,6 +21,10 @@ export default function CommunityCookbook() {
         queryKey: ["posts"],
         queryFn: () =>  getPosts(page),
     })
+
+    useEffect(() => {
+        console.log(posts)
+    }, [posts])
 
     if (isLoading) {
         return (

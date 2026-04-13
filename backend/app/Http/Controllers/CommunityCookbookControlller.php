@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Requests;
-use App\Models\User;
+
 use App\Models\CommunityCookbookLikes;
+use App\Models\CommunityCookbookComment;
 use App\Models\CommunityCookbook;
+use Illuminate\Support\Facades\Validator;
 
 class CommunityCookbookControlller extends Controller
 {
@@ -24,6 +25,7 @@ class CommunityCookbookControlller extends Controller
     public function likePost(Request $req){
         $userId = $req->attributes->get('user_id');
         $postId = $req->input('id');
+
 
          if (!$postId) {
             return response()->json([
@@ -90,4 +92,67 @@ class CommunityCookbookControlller extends Controller
             ], 500);
         }
     }
+
+
+    public function postComment(Request $req){
+        $userId = $req->attributes->get('user_id');
+        $postId = $req->input('id');
+
+        $validator = Validator::make($req->all(), [
+            'comment' => 'required|string|max:500'
+        ]);
+
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors'  => $validator->errors()
+            ], 422);
+        }
+
+
+        try {
+            $postExist = CommunityCookbook::find($postId);
+            if(!$postExist){
+                return response()->json([
+                'message' => 'Post not found'
+            ], 404);
+            }
+
+            CommunityCookbookComment::create([
+                'user_id' => $userId,
+                'post_id' => $postId,
+                'comment' => $req->input('comment')
+            ]);
+
+            return response()->json([
+                'message' => 'Comment added successfully'
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to add comment'
+            ], 500);
+        }
+    }
+
+    public function getComments(Request $req){
+        $postId = $req->query('id');
+
+        if(!$postId){
+            return response()->json([
+                'message' => 'post_id is required'
+            ], 400);
+        }
+
+        try {
+            $comments = CommunityCookbookComment::where('post_id', $postId)->with('user:id,firstname,lastname,email')->get();
+            return response()->json($comments, 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to fetch comments'
+            ], 500);
+        }
+    }
+
 }

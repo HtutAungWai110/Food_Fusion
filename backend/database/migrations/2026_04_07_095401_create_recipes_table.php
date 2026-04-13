@@ -24,7 +24,9 @@ return new class extends Migration
             $table->integer('servings')->nullable();
             $table->json('ingredients'); // array of ingredients
             $table->json('instructions'); // array of steps
+            $table->longText('detailed_instruction')->nullable();
             $table->string('image_path')->nullable();
+            $table->integer("likes")->default(0);
 
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
