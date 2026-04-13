@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             'auth/*',
             'recipes/*',
+            'community_cookbook/*',
         ]);
         $middleware->append(HandleCors::class);
         $middleware->alias([

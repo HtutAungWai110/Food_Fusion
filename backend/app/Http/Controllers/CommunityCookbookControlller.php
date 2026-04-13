@@ -1,0 +1,93 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Http\Requests;
+use App\Models\User;
+use App\Models\CommunityCookbookLikes;
+use App\Models\CommunityCookbook;
+
+class CommunityCookbookControlller extends Controller
+{
+    public function getPosts(){
+        try {
+        $posts = CommunityCookbook::with('user:id,firstname,lastname,email');
+        return response()->json($posts->paginate(12), 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to fetch resources'
+            ], 500);
+        }
+    }
+
+    public function likePost(Request $req){
+        $userId = $req->attributes->get('user_id');
+        $postId = $req->input('id');
+
+         if (!$postId) {
+            return response()->json([
+                'message' => 'post_id is required'
+            ], 400);
+        }
+
+
+        try {
+            $post = CommunityCookbook::find($postId);
+            if(!$post){
+                return response()->json([
+                    'message' => 'Post not found'
+                ], 404);
+            }
+
+            $likeExist = CommunityCookbookLikes::where('user_id', $userId)->where('post_id', $postId)->first();
+            if( $likeExist ){
+                $likeExist->delete();
+                $post->decrement('likes');
+                return response()->json([
+                    'message' => 'Like removed',
+                    'liked' => false
+                ], 200);
+            } else {
+                CommunityCookbookLikes::create([
+                    "user_id"=>$userId,
+                    "post_id"=>$postId
+                ]);
+                $post->increment('likes');
+
+                return response()->json([
+                    'message' => 'Like added',
+                    'liked' => true
+                ], 200);
+            }
+
+
+        }  catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to fetch resources'
+            ], 500);
+        }
+    }
+
+    public function isLiked(Request $req){
+        $userId = $req->attributes->get('user_id');
+        $postId = $req->query('id');
+
+         if (!$postId) {
+            return response()->json([
+                'message' => 'post_id is required'
+            ], 400);
+        }
+
+        try {
+            $isLiked = CommunityCookbookLikes::where('user_id', $userId)->where('post_id', $postId)->exists();
+            return response() ->json([
+                'liked' => $isLiked
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to fetch resources'
+            ], 500);
+        }
+    }
+}

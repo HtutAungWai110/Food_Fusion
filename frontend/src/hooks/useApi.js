@@ -137,4 +137,33 @@ async function likeRecipe(postId) {
     return data;
 }
 
-export {register, login, proxyFetch, getRecipes, getRecipe, likeRecipe};
+async function likePost(postId) {
+    const res = await proxyFetch(`/api/community_cookbook/likePost`, {
+        method: "POST",
+        body: JSON.stringify({id: postId})
+    })
+
+    if(!res.ok){
+        const error = await res.json();
+        throw new Error(`Status: ${res.status}, ${error.message}`)
+    }
+
+    const data = await res.json();
+    return data;
+}
+
+async function getPosts(page) {
+    const res = await fetch(`/api/community_cookbook/getPosts?page=${page}`, {
+        method: "GET"
+    })   
+
+    if(!res.ok){
+        const error = await res.json();
+        throw new Error(`Status: ${res.status}, ${error.message}`) 
+    }
+
+    const data = await res.json();
+    return data;
+}
+
+export {register, login, proxyFetch, getRecipes, getRecipe, likeRecipe, likePost, getPosts};

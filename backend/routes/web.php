@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RecipesController;
+use App\Http\Controllers\CommunityCookbookControlller;
 
 Route::get('/', function () {
     // return response()->json([
@@ -37,6 +38,12 @@ Route::prefix('recipes')->group(function () {
     Route::get("/popularRecipes", [RecipesController::class, "getPopularRecipes"]);
     Route::post("/likeRecipe", [RecipesController::class, "handleLike"])->middleware('auth');
     Route::get("/liked", [RecipesController::class, "checkLiked"])->middleware("auth");
+});
+
+Route::prefix('community_cookbook')->group(function () {
+    Route::get('/getPosts', [CommunityCookbookControlller::class, "getPosts"]);
+    Route::post('/likePost', [CommunityCookbookControlller::class, "likePost"])->middleware('auth');
+    Route::get('/isLiked', [CommunityCookbookControlller::class, "isLiked"])->middleware('auth');
 });
 
 

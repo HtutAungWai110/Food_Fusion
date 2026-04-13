@@ -18,7 +18,7 @@ class RecipesController extends Controller
         $title = $req->query('title');
 
         try {
-            $query = Recipe::query();
+            $query = Recipe::with("user:id,firstname,lastname,email");
 
             if ($cuisine && $cuisine !== 'All') {
                 $query->where('cuisine', $cuisine);

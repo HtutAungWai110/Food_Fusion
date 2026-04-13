@@ -100,6 +100,6 @@ class Recipe extends Model
             return null;
         }
 
-    // In your User Model
+
 
 }

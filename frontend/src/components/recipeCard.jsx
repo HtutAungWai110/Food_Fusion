@@ -37,8 +37,9 @@ import {Link} from "react-router-dom"
 import { useState } from "react"
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react"
+import { memo } from "react"
 
-export default function RecipeCard({ recipe }) {
+function RecipeCard({ recipe }) {
   const {
     id,
     title,
@@ -213,3 +214,5 @@ export default function RecipeCard({ recipe }) {
     </motion.div>
   )
 }
+
+export default memo(RecipeCard);
