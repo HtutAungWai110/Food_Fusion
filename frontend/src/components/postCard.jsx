@@ -1,8 +1,10 @@
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Heart, MessageCircle, Share2, UserCircle, MoreHorizontal } from "lucide-react"
+import { Heart, MessageCircle, Share2, UserCircle, X } from "lucide-react"
 import PostLikeBtn from "./postLikeBtn"
 import { memo } from "react"
+import SignupCard from "./SignupCard"
+import MessageBox from "./messageBox"
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react"
 
@@ -15,6 +17,19 @@ function PostCard({ post, setMessage }) {
     day: 'numeric',
     year: 'numeric'
   });
+
+  const onLike = () => {
+        setMessage(
+            <motion.div animate={{scale: [0, 1]}} className="fixed top-[50%] left-[50%] -translate-[50%] z-50 flex flex-col items-center w-full max-w-sm ">
+                
+                <SignupCard/>
+                <button onClick={() => setMessage(null)} className="absolute right-1 top-1 opacity-50 hover:opacity-70"><X/></button>
+                <MessageBox status={"error"} message={"Login or signup for this action"}/>
+            </motion.div>
+        )
+  }
+
+  const isGuest = JSON.parse(localStorage.getItem("guest"));
   
 
   return (
@@ -57,11 +72,18 @@ function PostCard({ post, setMessage }) {
 
         <CardFooter className="flex items-center justify-between border-t bg-muted/20 py-1.5 px-4 rounded-b-xl">
           <div className="flex items-center gap-1">
-            
+
+            { isGuest ? 
+
+            <Button onClick={onLike} variant="ghost" size="sm" className="hover:text-rose-500 gap-1.5 px-2 h-9">
+              <Heart className="w-4 h-4" />
+              <span className="text-xs font-semibold">{likes}</span>
+            </Button>
+            :
             <PostLikeBtn id={id} setMessage={setMessage}>
               <span className="text-xs font-semibold">{likes}</span>
             </PostLikeBtn>
-            
+            }
             
             
             <Button variant="ghost" size="sm" className="hover:text-blue-500 gap-1.5 px-2 h-9">

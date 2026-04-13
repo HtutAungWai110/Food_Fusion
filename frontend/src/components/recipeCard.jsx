@@ -66,6 +66,8 @@ function RecipeCard({ recipe }) {
     show: { opacity: 1, y: 0 },
   };
 
+
+
   return (
     <motion.div
       variants={item}
