@@ -1,11 +1,24 @@
 import { useQuery } from "@tanstack/react-query";
 import CommentTemplate from "./commentTemplate";
+import { useEffect } from "react";
+import { proxyFetch } from "../hooks/useApi";
 
 export default function CommentWrapper({postId}){
+    const isGuest = JSON.parse(sessionStorage.getItem("guest"))
 
     const {data: comments, isLoading, error} = useQuery({
         queryFn: async () => {
-            const res = await fetch(`/api/community_cookbook/getComments?id=${postId}`);
+            let res;
+            if (isGuest){
+                res = await fetch(`/api/community_cookbook/getComments?id=${postId}`, {
+                    method: "GET",
+                    credentials: "include"
+                });
+            } else {
+                res = await proxyFetch(`/api/community_cookbook/getComments?id=${postId}`, {
+                    method: "GET",
+                });
+            }
             if(!res.ok) {
                 const error = await res.json();
                 throw new Error(error.message);
@@ -17,6 +30,10 @@ export default function CommentWrapper({postId}){
         queryKey: ["comments", postId]
     })
 
+
+    useEffect(() => {
+        console.log(comments)
+    }, [comments])
    
 
     if(isLoading) return <p>Loading comments...</p>

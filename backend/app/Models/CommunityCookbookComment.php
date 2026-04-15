@@ -24,6 +24,17 @@ class CommunityCookbookComment extends Model
         'post_id',
     ];
 
+    protected $appends = ['modifiable'];
+
+    // protected $attributes = [
+    //     'modifiable' => false,
+    // ];
+
+    public function getModifiableAttribute(): bool
+    {
+        return $this->attributes['modifiable'] ?? false;
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

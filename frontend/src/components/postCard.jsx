@@ -44,8 +44,8 @@ function PostCard({ post, setMessage }) {
       <Card className="border-none shadow-md bg-card/60 backdrop-blur-md hover:shadow-lg transition-shadow duration-300">
         <CardHeader className="flex flex-row items-center justify-between pb-2 px-4 pt-4">
           <div className="flex items-center gap-3">
-            <div className="bg-orange-100 dark:bg-orange-950 p-1.5 rounded-full">
-              <UserCircle className="w-8 h-8 text-orange-600 dark:text-orange-400" />
+            <div className="p-1.5 rounded-full">
+              <UserCircle className="w-8 h-8" />
             </div>
             <div className="flex flex-col">
               <span className="font-bold text-sm sm:text-base leading-tight">
@@ -111,20 +111,23 @@ function PostCard({ post, setMessage }) {
               exit={{ height: 0, opacity: 0 }}
               className="w-full overflow-hidden"
             >
-              <div className="mt-4 pt-4 border-t space-y-4 p-5">
+              <div className="mt-4 pt-4 border-t space-y-4 p-5 max-h-[200px] overflow-y-auto">
                 {/* Comments Display List */}
                 <CommentWrapper postId={id}/>
                 {/* New Comment Input */}
              
-              {
-                isGuest ?
-                <div className="text-center p-5">
-                  <Link className="font-bold text-orange-500" to={'/login'}>Login</Link> or <Link className="font-bold text-orange-500" to={'/signup'}>Signup</Link> to post a comment.
-                </div>
-                :
-                
-                <CommentInput postId={id}/>
-              }
+              
+              </div>
+              <div className="mt-2 pt-2 border-t space-y-4 p-5 max-h-[200px] overflow-y-auto">
+                {
+                  isGuest ?
+                  <div className="text-center p-5">
+                    <Link className="font-bold text-orange-500" to={'/login'}>Login</Link> or <Link className="font-bold text-orange-500" to={'/signup'}>Signup</Link> to post a comment.
+                  </div>
+                  :
+                  
+                  <CommentInput postId={id}/>
+                }
               </div>
             </motion.div>
           }

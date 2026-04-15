@@ -6,7 +6,6 @@ import Pagination from "../components/pagination"
 import { Spinner } from "@/components/ui/spinner"
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
-
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "motion/react"
 
@@ -110,6 +109,7 @@ export default function CommunityCookbook() {
                 )}
             </div>
             {message}
+            <Pagination currentPage={posts?.current_page} maxPage={posts?.last_page} setPage={setPage}/>
         </div>
     )
 }

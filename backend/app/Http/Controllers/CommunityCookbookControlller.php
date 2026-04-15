@@ -137,6 +137,7 @@ class CommunityCookbookControlller extends Controller
     }
 
     public function getComments(Request $req){
+        $accessToken = $req->cookie('access_token');
         $postId = $req->query('id');
 
         if(!$postId){
@@ -146,11 +147,56 @@ class CommunityCookbookControlller extends Controller
         }
 
         try {
-            $comments = CommunityCookbookComment::where('post_id', $postId)->with('user:id,firstname,lastname,email')->get();
+            $userId = null;
+            if ($accessToken) {
+                $payload = auth('api')->setToken($accessToken)->getPayload();
+                $userId = $payload->get('sub');
+            }
+
+            $comments = CommunityCookbookComment::where('post_id', $postId)
+                ->with('user:id,firstname,lastname,email')
+                ->get();
+
+
+            foreach ($comments as $comment) {
+                $comment->setAttribute('modifiable', $userId && $comment->user_id === $userId);
+            }
+
             return response()->json($comments, 200);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to fetch comments'
+            ], 500);
+        }
+    }
+
+    public function deleteComment(Request $req){
+        $userId = $req->attributes->get('user_id');
+        $commentId = $req->query('id');
+
+        if(!$commentId){
+            return response()->json([
+                'message' => 'comment_id is required'
+            ], 400);
+        }
+
+        try {
+            $comment = CommunityCookbookComment::where('id', $commentId)->where('user_id', $userId)->first();
+            if(!$comment){
+                return response()->json([
+                    'message' => 'Comment not found'
+                ], 404);
+            }
+
+            $comment->delete();
+            return response()->json([
+                'message' => 'Comment deleted successfully'
+            ], 200);
+
+
+        }catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to add comment'
             ], 500);
         }
     }
