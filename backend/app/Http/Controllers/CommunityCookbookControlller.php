@@ -173,6 +173,7 @@ class CommunityCookbookControlller extends Controller
     public function deleteComment(Request $req){
         $userId = $req->attributes->get('user_id');
         $commentId = $req->query('id');
+        $postId = $req->query('post_id');
 
         if(!$commentId){
             return response()->json([
@@ -181,7 +182,7 @@ class CommunityCookbookControlller extends Controller
         }
 
         try {
-            $comment = CommunityCookbookComment::where('id', $commentId)->where('user_id', $userId)->first();
+            $comment = CommunityCookbookComment::where('id', $commentId)->where('user_id', $userId)->where('post_id', $postId)->first();
             if(!$comment){
                 return response()->json([
                     'message' => 'Comment not found'

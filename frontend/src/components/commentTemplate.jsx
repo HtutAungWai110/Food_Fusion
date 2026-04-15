@@ -3,15 +3,24 @@ import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { useMutation } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
+import { memo } from "react";
+import SessionExpiredAlert from "./sessionExpiredAlert";
+import { useDispatch } from "react-redux";
+import { setUserNull } from "../states/UserState";
+import { proxyFetch } from "../hooks/useApi";
 
-export default function CommentTemplate({cmt}){
 
+
+function CommentTemplate({cmt, setMessage}){
+
+    const dispatch = useDispatch();
     const { comment, created_at, user, modifiable, id, post_id} = cmt;
     const queryClient = useQueryClient();
 
+
     const deleteCommentMutation = useMutation({
         mutationFn: async () => {
-            const res = await fetch(`/api/community_cookbook/deleteComment?id=${id}`, {
+            const res = await proxyFetch(`/api/community_cookbook/deleteComment?id=${id}&post_id=${post_id}`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json"
@@ -27,7 +36,13 @@ export default function CommentTemplate({cmt}){
         },
         mutationKey: ["delete_comment", id],
         onError: (e) => {
-            console.error(e.message);
+            if(e.message === "Unauthorized - No tokens found"){
+                setMessage(
+                    <SessionExpiredAlert/>
+                );
+                dispatch(setUserNull());
+            }
+            
         }, 
         onSuccess: (data) => {
             console.log(data);
@@ -58,12 +73,12 @@ export default function CommentTemplate({cmt}){
                 <div className="flex gap-2 items-center absolute right-0">
 
                     <Button 
-                    disabled={deleteCommentMutation.isPending} 
+                    disabled={deleteCommentMutation.isPending || deleteCommentMutation.isSuccess} 
                     onClick={() => deleteCommentMutation.mutate()} 
                  
                     variant="ghost" 
                     className="flex gap-1 text-muted-foreground hover:bg-transparent p-2 border">
-                         {deleteCommentMutation.isPending ? <Spinner/> : "Delete"}
+                         {deleteCommentMutation.isPending || deleteCommentMutation.isSuccess ? <Spinner/> : "Delete"}
                     </Button>
                     <Button 
                 
@@ -77,3 +92,4 @@ export default function CommentTemplate({cmt}){
         </div>
     )
 }
+export default memo(CommentTemplate);

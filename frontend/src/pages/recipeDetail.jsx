@@ -46,7 +46,7 @@ export default function RecipeDetail() {
                 
                 <SignupCard/>
                 <button onClick={() => setMessage(null)} className="absolute right-1 top-1 opacity-50 hover:opacity-70"><X/></button>
-                <MessageBox status={"error"} message={"Login or signup for this action"}/>
+              
             </motion.div>
         )
     }

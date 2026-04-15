@@ -113,7 +113,7 @@ function PostCard({ post, setMessage }) {
             >
               <div className="mt-4 pt-4 border-t space-y-4 p-5 max-h-[200px] overflow-y-auto">
                 {/* Comments Display List */}
-                <CommentWrapper postId={id}/>
+                <CommentWrapper postId={id} setMessage={setMessage}/>
                 {/* New Comment Input */}
              
               
@@ -126,7 +126,7 @@ function PostCard({ post, setMessage }) {
                   </div>
                   :
                   
-                  <CommentInput postId={id}/>
+                  <CommentInput postId={id} setMessage={setMessage}/>
                 }
               </div>
             </motion.div>

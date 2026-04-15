@@ -3,7 +3,7 @@ import CommentTemplate from "./commentTemplate";
 import { useEffect } from "react";
 import { proxyFetch } from "../hooks/useApi";
 
-export default function CommentWrapper({postId}){
+export default function CommentWrapper({postId, setMessage}){
     const isGuest = JSON.parse(sessionStorage.getItem("guest"))
 
     const {data: comments, isLoading, error} = useQuery({
@@ -42,7 +42,7 @@ export default function CommentWrapper({postId}){
         <>
             {comments && comments.length > 0 ? (
                 comments.map((comment) => (
-                <CommentTemplate key={comment.id} cmt={comment}/>
+                <CommentTemplate key={comment.id} cmt={comment} setMessage={setMessage}/>
                 ))
                 ) : (
                 <p className="text-xs text-muted-foreground text-center py-2">No comments yet. Be the first to comment!</p>

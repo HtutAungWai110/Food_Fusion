@@ -6,10 +6,14 @@ import { Button } from "@/components/ui/button"
 import { postComment } from "../hooks/useApi";
 import { useQueryClient } from "@tanstack/react-query";
 import { Spinner } from "@/components/ui/spinner"
+import SessionExpiredAlert from "./sessionExpiredAlert";
+import { useDispatch } from "react-redux";
+import { setUserNull } from "../states/UserState";
 
-export default function CommentInput({ postId }) {
+export default function CommentInput({ postId, setMessage }) {
 
-    
+
+    const dispatch = useDispatch();  
     const [newComment, setNewComment] = useState("");
     const queryClient = useQueryClient();
 
@@ -17,7 +21,12 @@ export default function CommentInput({ postId }) {
       mutationFn: () => postComment(newComment, postId),
       mutationKey: ["post_comment", postId],
       onError: (e) => {
-        console.error(e.message);
+        if(e.message === "Unauthorized - No tokens found"){
+            setMessage(
+                <SessionExpiredAlert/>
+            );
+            dispatch(setUserNull());
+        }
       },
       onSuccess: (data) => {
         console.log(data);
@@ -45,7 +54,9 @@ export default function CommentInput({ postId }) {
                   <div className="p-1 rounded-full">
                     <UserCircle className="w-7 h-7" />
                   </div>
+                  <span className="opacity-50">{newComment.length}/500</span>
                   <div className="relative flex-1">
+                    
                     <Input
                       value={newComment}
                       onChange={handleCommentChange}

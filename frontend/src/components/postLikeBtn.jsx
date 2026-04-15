@@ -1,23 +1,22 @@
 import { likePost, proxyFetch } from "../hooks/useApi";
 import { useMutation } from "@tanstack/react-query";
-import { setUserNull } from "../states/UserState";
-import { useDispatch } from "react-redux";
+
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton"
 import { Heart } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
-import MessageBox from "./messageBox";
-import { Alert } from "@/components/ui/alert"
+import { useDispatch } from "react-redux";
+import {setUserNull} from "../states/UserState"
 import { Button } from "@/components/ui/button"
 import { useEffect } from "react";
+import SessionExpiredAlert from "./sessionExpiredAlert";
 
 
 export default function PostLikeBtn({id, setMessage, children}){
     
   
     const dispatch = useDispatch();
-    const navigate = useNavigate();
+
     const queryClient = useQueryClient();
     const {data, isLoading,} = useQuery({
         queryFn: async () => {
@@ -51,17 +50,10 @@ export default function PostLikeBtn({id, setMessage, children}){
         onError: (e) => {
             if(e.message === "Unauthorized - No tokens found"){
                 setMessage(
-                    <div className="fixed top-[50%] left-[50%] -translate-[50%] z-50 rounded-2xl w-[500px]">
-
-                        <Alert>
-                            <MessageBox status={"error"} message={"Session expired! Login again."}/>
-                            <button className="border rounded-xl m-2 bg-orange-500 p-2 text-white" onClick={() => navigate("/login")}>Login</button>
-                        </Alert>
-                    </div>
-                ),
-                dispatch(setUserNull())
+                    <SessionExpiredAlert/>
+                );
+                dispatch(setUserNull());
             }
-            console.error(e.message)
         },
         onSuccess: () => {
             queryClient.invalidateQueries({queryKey: ["postLiked", id]})
