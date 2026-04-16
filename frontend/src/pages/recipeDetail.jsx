@@ -19,9 +19,9 @@ import { Separator } from "@/components/ui/separator"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import MessageBox from "../components/messageBox"
 import RecipeLikeBtn from "../components/recipeLikeBtn"
 import SignupCard from "../components/SignupCard"
+import { useSelector } from "react-redux"
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react"
 import { useState } from "react"
@@ -38,7 +38,7 @@ export default function RecipeDetail() {
         enabled: !!id,
     })
 
-    const isGuest = JSON.parse(sessionStorage.getItem("guest"));
+    const {data: userData} = useSelector(state => state.user);
 
     const onLike = () => {
         setMessage(
@@ -205,14 +205,17 @@ export default function RecipeDetail() {
                                             {/* <button className="cursor-pointer active:scale-110" onClick={() => likeMutation.mutate(id)}>
                                                 <ThumbsUp className="w-5 h-5 text-rose-500 " />
                                             </button> */}
-                                            {isGuest ? 
+                                            {userData ? 
+
+                                            <RecipeLikeBtn id={id} setMessage={setMessage}/>
+                                            :
                                             <button onClick={onLike} className="cursor-pointer active:scale-110">
                                                 <ThumbsUp className={`w-5 h-5 text-rose-500 `} />
                                             
                                             </button>
-                                            :
+                                            
         
-                                            <RecipeLikeBtn id={id} setMessage={setMessage}/>
+                                            
                                             }
                                             <span className="text-sm font-semibold">{likes} Likes</span>
                                             <span className="text-[10px] uppercase text-muted-foreground font-bold tracking-wider">Community</span>

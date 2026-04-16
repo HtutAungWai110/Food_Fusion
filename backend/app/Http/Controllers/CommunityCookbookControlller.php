@@ -13,7 +13,8 @@ class CommunityCookbookControlller extends Controller
 {
     public function getPosts(){
         try {
-        $posts = CommunityCookbook::with('user:id,firstname,lastname,email');
+        $posts = CommunityCookbook::with('user:id,firstname,lastname,email')
+            ->orderBy('created_at', 'desc');
         return response()->json($posts->paginate(12), 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -198,6 +199,46 @@ class CommunityCookbookControlller extends Controller
         }catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to add comment'
+            ], 500);
+        }
+    }
+
+    public function createPost(Request $req){
+        $userId = $req->attributes->get('user_id');
+
+        $validator = Validator::make($req->all(), [
+            'description' => 'required|string|max:1000',
+            'image' => 'image|max:2048'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors'  => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            $image = $req->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $imagePath = 'community_cookbook_images/' . $imageName;
+
+            // Save directly to public/storage/community_cookbook_images
+            $image->move(public_path('storage/community_cookbook_images'), $imageName);
+
+            CommunityCookbook::create([
+                'user_id' => $userId,
+                'post_description' => $req->input('description'),
+                'image_path' => $imagePath
+            ]);
+
+            return response()->json([
+                'message' => 'Post created successfully'
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to create post'
             ], 500);
         }
     }

@@ -47,6 +47,7 @@ Route::prefix('community_cookbook')->group(function () {
     Route::post('/postComment', [CommunityCookbookControlller::class, "postComment"])->middleware('auth');
     Route::get('/getComments', [CommunityCookbookControlller::class, "getComments"]);
     Route::delete('/deleteComment', [CommunityCookbookControlller::class, "deleteComment"])->middleware('auth');
+    Route::post('/uploadPost', [CommunityCookbookControlller::class, "createPost"])->middleware('auth');
 });
 
 

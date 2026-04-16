@@ -10,6 +10,8 @@ import RecipeDetail from "./pages/recipeDetail"
 import ForgotPasswordPage from "./pages/forgotPassword"
 import ResetPassword from "./pages/resetPassword"
 import CommunityCookbook from "./pages/communityCookbook"
+import UploadPost from "./pages/UploadPost"
+import ContactUs from "./pages/contactUs"
 
 import { ThemeProvider } from "./components/theme-provider"
 import { useEffect } from "react"
@@ -55,6 +57,7 @@ function App() {
           </Route>
           <Route element={<ProtectedRoute/>}>
             <Route path="/profile" element={<div>Profile</div>}/>
+            <Route path="/upload_post" element={<UploadPost/>}/>
           </Route>
           
           <Route path="/forgot-password" element={<ForgotPasswordPage/>}/>
@@ -64,7 +67,7 @@ function App() {
           <Route path="/recipe_collection" element={<Recipes/>} />
           <Route path="/recipe_collection/recipe" element={<RecipeDetail/>} />
           <Route path="/community_cookbook" element={<CommunityCookbook/>} />
-          <Route path="/contact_us" element={<h1>Contact us</h1>} />
+          <Route path="/contact_us" element={<ContactUs/>} />
           <Route path="/curlinary_resources" element={<h1>Curlinary Resources</h1>} />
           <Route path="/educational_resources" element={<h1>Educational Resources</h1>} />
           

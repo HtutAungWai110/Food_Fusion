@@ -57,15 +57,18 @@ async function login(formData){
 
 async function proxyFetch(url, options = {}) {
 
+    const headers = { ...options.headers };
+    
+    // Only set Content-Type to application/json if it's not FormData and not already set
+    if (!(options.body instanceof FormData) && !headers['Content-Type']) {
+        headers['Content-Type'] = 'application/json';
+    }
+
     //Set default headers and credentials
     const defaultOptions = {
         credentials: 'include',
         ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers,
-            
-        },
+        headers
     };
 
     //Attempt the actual request first
@@ -91,6 +94,21 @@ async function proxyFetch(url, options = {}) {
     }
 
     return response;
+}
+
+async function uploadPost(formData) {
+    const res = await proxyFetch(`/api/community_cookbook/uploadPost`, {
+        method: "POST",
+        body: formData,
+    })
+
+    if(!res.ok){
+        const error = await res.json();
+        throw new Error(`Status: ${res.status}, ${error.message}`)
+    }
+
+    const data = await res.json();
+    return data;
 }
 
 async function getRecipes(cuisine, difficulty, page, search){
@@ -181,4 +199,22 @@ async function getPosts(page) {
     return data;
 }
 
-export {register, login, proxyFetch, getRecipes, getRecipe, likeRecipe, likePost, getPosts, postComment};
+async function submitFeedback(formData) {
+    const res = await fetch(`/api/feedback`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+    })
+
+    if(!res.ok){
+        const error = await res.json();
+        throw new Error(error.message || "Failed to submit feedback");
+    }
+
+    const data = await res.json();
+    return data;
+}
+
+export {register, login, proxyFetch, getRecipes, getRecipe, likeRecipe, likePost, getPosts, postComment, uploadPost, submitFeedback};

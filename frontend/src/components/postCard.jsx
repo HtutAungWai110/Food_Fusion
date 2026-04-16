@@ -7,12 +7,15 @@ import SignupCard from "./SignupCard"
 import { Link } from "react-router-dom"
 import CommentInput from "./commentInput"
 import CommentWrapper from "./commentsWrapper"
+import { useSelector } from "react-redux"
+import {Skeleton} from "@/components/ui/skeleton"
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "motion/react"
 
 function PostCard({ post, setMessage }) {
   const { user, post_description, image_url, likes, created_at, id } = post;
   const [showingComments, setShowingComments] = useState(false);
+  const [imageLoading, setImageLoading] = useState(true);
 
   // Format date to locale string
   const date = new Date(created_at).toLocaleDateString(undefined, {
@@ -32,8 +35,10 @@ function PostCard({ post, setMessage }) {
         )
   }
 
-  const isGuest = JSON.parse(sessionStorage.getItem("guest"));
+  
 
+  const {data: userData} = useSelector(state => state.user);
+ 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -60,6 +65,12 @@ function PostCard({ post, setMessage }) {
           <p className="text-sm sm:text-base leading-relaxed text-foreground/90 whitespace-pre-wrap">
             {post_description}
           </p>
+
+          {
+            image_url && imageLoading && (
+              <Skeleton className="w-full h-64 rounded-xl" />
+            )
+          }
           
           {image_url && (
             <div className="rounded-xl overflow-hidden border border-border/50">
@@ -67,6 +78,7 @@ function PostCard({ post, setMessage }) {
                 src={image_url} 
                 alt="Post content" 
                 className="w-full h-auto " 
+                onLoad={() => setImageLoading(false)}
               />
             </div>
           )}
@@ -76,16 +88,16 @@ function PostCard({ post, setMessage }) {
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-1">
 
-              { isGuest ? 
+              { userData ? 
 
+             <PostLikeBtn id={id} setMessage={setMessage}>
+                <span className="text-xs font-semibold">{likes}</span>
+              </PostLikeBtn>
+              :
               <Button onClick={onLike} variant="ghost" size="sm" className="hover:text-rose-500 gap-1.5 px-2 h-9">
                 <Heart className="w-4 h-4" />
                 <span className="text-xs font-semibold">{likes}</span>
               </Button>
-              :
-              <PostLikeBtn id={id} setMessage={setMessage}>
-                <span className="text-xs font-semibold">{likes}</span>
-              </PostLikeBtn>
               }
               
               
@@ -120,13 +132,13 @@ function PostCard({ post, setMessage }) {
               </div>
               <div className="mt-2 pt-2 border-t space-y-4 p-5 max-h-[200px] overflow-y-auto">
                 {
-                  isGuest ?
+                  userData ?
+                  
+                  <CommentInput postId={id} setMessage={setMessage}/>
+                  :
                   <div className="text-center p-5">
                     <Link className="font-bold text-orange-500" to={'/login'}>Login</Link> or <Link className="font-bold text-orange-500" to={'/signup'}>Signup</Link> to post a comment.
                   </div>
-                  :
-                  
-                  <CommentInput postId={id} setMessage={setMessage}/>
                 }
               </div>
             </motion.div>
