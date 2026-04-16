@@ -1,7 +1,9 @@
+
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { submitFeedback } from "../hooks/useApi";
+import {useSelector} from "react-redux"
+import {proxyFetch} from "../hooks/useApi";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react";
 import {
@@ -18,14 +20,52 @@ import { Spinner } from "@/components/ui/spinner";
 import MessageBox from "../components/messageBox";
 import { Mail, MessageSquare, User } from "lucide-react";
 
+
 export default function ContactUs() {
-  const { register, handleSubmit, formState: { errors }, reset } = useForm();
+  const {data: userData} = useSelector((state) => state.user);
+  const { register, handleSubmit, formState: { errors }, reset } = useForm({
+    defaultValues: {
+      firstname: userData?.firstname || "Jane",
+      lastname: userData?.lastname || "Doe",
+      email: userData?.email || "jane@example.com"
+    }
+  });
   const [message, setMessage] = useState(null);
 
+
   const feedbackMutation = useMutation({
-    mutationFn: (formData) => submitFeedback(formData),
+    mutationFn: async (formData) => {
+      let res;
+      if (userData) {
+        res = await proxyFetch(`/api/feedback/submit`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      })
+      } else {
+        res = await fetch(`/api/feedback/submit`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        })
+      }
+       
+
+    if(!res.ok){
+        const error = await res.json();
+        throw new Error(error.message || "Failed to submit feedback");
+    }
+
+    const data = await res.json();
+    return data;
+    },
     onSuccess: (data) => {
       setMessage(<MessageBox status="success" message={data.message || "Thank you for your feedback!"} />);
+      console.log(data)
       reset();
     },
     onError: (error) => {
@@ -111,13 +151,13 @@ export default function ContactUs() {
               <Textarea
                 placeholder="How can we help you?"
                 className="min-h-[150px] p-4 focus-visible:ring-orange-500/50"
-                {...register("feedback", { 
+                {...register("message", { 
                   required: "Feedback message is required",
                   minLength: { value: 10, message: "Please provide a bit more detail (at least 10 characters)" }
                 })}
               />
-              {errors.feedback && (
-                <p className="text-destructive text-xs font-medium">{errors.feedback.message}</p>
+              {errors.message && (
+                <p className="text-destructive text-xs font-medium">{errors.message.message}</p>
               )}
             </div>
 

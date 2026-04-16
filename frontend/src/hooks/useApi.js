@@ -199,22 +199,6 @@ async function getPosts(page) {
     return data;
 }
 
-async function submitFeedback(formData) {
-    const res = await fetch(`/api/feedback`, {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData)
-    })
 
-    if(!res.ok){
-        const error = await res.json();
-        throw new Error(error.message || "Failed to submit feedback");
-    }
 
-    const data = await res.json();
-    return data;
-}
-
-export {register, login, proxyFetch, getRecipes, getRecipe, likeRecipe, likePost, getPosts, postComment, uploadPost, submitFeedback};
+export {register, login, proxyFetch, getRecipes, getRecipe, likeRecipe, likePost, getPosts, postComment, uploadPost};

@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RecipesController;
 use App\Http\Controllers\CommunityCookbookControlller;
+use App\Http\Controllers\FeedbackController;
 
 Route::get('/', function () {
     // return response()->json([
@@ -50,6 +51,12 @@ Route::prefix('community_cookbook')->group(function () {
     Route::post('/uploadPost', [CommunityCookbookControlller::class, "createPost"])->middleware('auth');
 });
 
+Route::prefix('feedback')->group(function () {
+    Route::post('/submit', [FeedbackController::class, 'submitFeedback']);
+
+
+
+});
 
 
 

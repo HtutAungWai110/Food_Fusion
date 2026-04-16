@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'auth/*',
             'recipes/*',
             'community_cookbook/*',
+            'feedback/*',
         ]);
         $middleware->append(HandleCors::class);
         $middleware->alias([
