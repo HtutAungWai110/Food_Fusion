@@ -51,13 +51,13 @@ class AuthController extends Controller
             ]);
         }
 
-        if($user->login_attempts >= 5){
+        if($user->login_attempts >= 3){
             $user->update([
-                'lockout_until' => now()->addMinutes(15)
+                'lockout_until' => now()->addMinutes(3)
             ]);
 
             return response()->json([
-                'message' => "Your account is temporarily locked. Try again after 15 minutes."
+                'message' => "Your account is temporarily locked. Try again after 3 minutes."
             ], 401);
         }
 

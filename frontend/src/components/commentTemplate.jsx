@@ -5,15 +5,13 @@ import { useMutation } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
 import { memo } from "react";
 import SessionExpiredAlert from "./sessionExpiredAlert";
-import { useDispatch } from "react-redux";
-import { setUserNull } from "../states/UserState";
+
 import { proxyFetch } from "../hooks/useApi";
 
 
 
 function CommentTemplate({cmt, setMessage}){
 
-    const dispatch = useDispatch();
     const { comment, created_at, user, modifiable, id, post_id} = cmt;
     const queryClient = useQueryClient();
 
@@ -35,17 +33,13 @@ function CommentTemplate({cmt, setMessage}){
             return await res.json();
         },
         mutationKey: ["delete_comment", id],
-        onError: (e) => {
-            if(e.message === "Unauthorized - No tokens found"){
-                setMessage(
-                    <SessionExpiredAlert/>
-                );
-                dispatch(setUserNull());
-            }
-            
-        }, 
-        onSuccess: (data) => {
-            console.log(data);
+        onError: () => {
+            setMessage({
+                message: "Failed to delete comment. Please try again.",
+                status: "error"
+            })
+        },
+        onSuccess: () => {
             queryClient.invalidateQueries(["comments", post_id]);
         }
     })

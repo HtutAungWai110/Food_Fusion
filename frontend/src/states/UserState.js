@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { proxyFetch } from "../hooks/useApi";
+import { tryProxyFetch } from "../hooks/useApi";
 
 export const getUser = createAsyncThunk(
     'user/getUser',
@@ -8,7 +8,7 @@ export const getUser = createAsyncThunk(
         const isGuest = JSON.parse(sessionStorage.getItem("guest"));
         if(isGuest) return null;
             try {
-            const res = await proxyFetch('/api/user/info', {
+            const res = await tryProxyFetch('/api/user/info', {
                 method: "GET",
             });
 
@@ -18,7 +18,6 @@ export const getUser = createAsyncThunk(
                 
                 return rejectWithValue(data.message || 'Failed to fetch user');
             }
-            sessionStorage.setItem("user_data", JSON.stringify(data.user));
             return data.user;
             } catch (error) {
                 return rejectWithValue(error.message || 'An error occurred');

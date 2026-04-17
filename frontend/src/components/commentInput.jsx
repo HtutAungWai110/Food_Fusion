@@ -6,28 +6,23 @@ import { Button } from "@/components/ui/button"
 import { postComment } from "../hooks/useApi";
 import { useQueryClient } from "@tanstack/react-query";
 import { Spinner } from "@/components/ui/spinner"
-import SessionExpiredAlert from "./sessionExpiredAlert";
-import { useDispatch } from "react-redux";
-import { setUserNull } from "../states/UserState";
 
 export default function CommentInput({ postId, setMessage }) {
 
 
-    const dispatch = useDispatch();  
+
     const [newComment, setNewComment] = useState("");
     const queryClient = useQueryClient();
 
     const postCommentMutation = useMutation({
       mutationFn: () => postComment(newComment, postId),
       mutationKey: ["post_comment", postId],
-      onError: (e) => {
-        if(e.message === "Unauthorized - No tokens found"){
-            setMessage(
-                <SessionExpiredAlert/>
-            );
-            dispatch(setUserNull());
-        }
-      },
+      onError: () => {
+            setMessage({
+                message: "Failed to post comment. Please try again.",
+                status: "error"
+            })
+        },
       onSuccess: (data) => {
         console.log(data);
         queryClient.invalidateQueries(["comments", postId]);

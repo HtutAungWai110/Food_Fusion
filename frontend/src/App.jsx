@@ -20,7 +20,7 @@ import { getUser } from "./states/UserState"
 import { Spinner } from "@/components/ui/spinner"
 import PublicRoute from "./lib/PublicRoute"
 import ProtectedRoute from "./lib/ProtectedRoute"
-
+import SessionExpired from "./pages/sessionExpired"
 
 
 function App() {
@@ -62,6 +62,7 @@ function App() {
           
           <Route path="/forgot-password" element={<ForgotPasswordPage/>}/>
           <Route path="/reset-password" element={<ResetPassword/>}/>
+          <Route path="/session-expired" element={<SessionExpired/>}/>
           
           <Route path="/about_us" element={<h1>About us</h1>} />
           <Route path="/recipe_collection" element={<Recipes/>} />

@@ -26,12 +26,10 @@ function PostCard({ post, setMessage }) {
 
   const onLike = () => {
         setMessage(
-            <motion.div animate={{scale: [0, 1]}} className="fixed top-[50%] left-[50%] -translate-[50%] z-50 flex flex-col items-center w-full max-w-sm ">
-                
-                <SignupCard/>
-                <button onClick={() => setMessage(null)} className="absolute right-1 top-1 opacity-50 hover:opacity-70"><X/></button>
-               
-            </motion.div>
+            {
+              message: "Please login to like posts.",
+              status: "error"
+            }
         )
   }
 

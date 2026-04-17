@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { getPosts } from "../hooks/useApi"
-import {  useEffect, useState } from "react"
+import {  useState } from "react"
 import PostCard from "../components/postCard"
 import Pagination from "../components/pagination"
 import { Spinner } from "@/components/ui/spinner"
@@ -8,6 +8,7 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useNavigate } from "react-router-dom"
+import MessagePopupBottom from "../components/messagePopupBottom"
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "motion/react"
 
@@ -27,9 +28,6 @@ export default function CommunityCookbook() {
         queryFn: () =>  getPosts(page),
     })
 
-    useEffect(() => {
-        console.log(posts)
-    }, [posts])
 
     if (isLoading) {
         return (
@@ -122,7 +120,11 @@ export default function CommunityCookbook() {
                     </motion.div>
                 )}
             </div>
-            {message}
+            {message
+                && 
+            <MessagePopupBottom message={message.message} status={message.status} setMessage={setMessage}/>
+            }
+            
             <Pagination currentPage={posts?.current_page} maxPage={posts?.last_page} setPage={setPage}/>
         </div>
     )

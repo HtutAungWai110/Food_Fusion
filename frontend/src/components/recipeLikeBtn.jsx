@@ -4,9 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton"
 import { ThumbsUp } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
-import SessionExpiredAlert from "./sessionExpiredAlert";
-import { useDispatch } from "react-redux";
-import { setUserNull } from "../states/UserState";
+
+
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react"
 
@@ -14,7 +13,7 @@ import { motion } from "motion/react"
 export default function RecipeLikeBtn({id, setMessage}){
     
    
-    const dispatch = useDispatch();
+
     const queryClient = useQueryClient();
     const {data, isLoading,} = useQuery({
         queryFn: async () => {
@@ -42,16 +41,15 @@ export default function RecipeLikeBtn({id, setMessage}){
      const likeMutation = useMutation({
         mutationFn: (postId) => likeRecipe(postId),
         mutationKey: ["recipe_like"],
-        onError: (e) => {
-            if(e.message === "Unauthorized - No tokens found"){
-                setMessage(<SessionExpiredAlert/>);
-                dispatch(setUserNull);
-               
-            }
-        },
         onSuccess: () => {
             queryClient.invalidateQueries({queryKey: ["liked", id]})
             queryClient.invalidateQueries({queryKey: ["recipe", id]})
+        },
+        onError: () => {
+            setMessage({
+                message: "Failed to like this post. Please try again.",
+                status: "error"
+            })
         },
     })
 

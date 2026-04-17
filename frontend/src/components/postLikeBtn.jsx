@@ -5,8 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton"
 import { Heart } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useDispatch } from "react-redux";
-import {setUserNull} from "../states/UserState"
+
 import { Button } from "@/components/ui/button"
 import { useEffect } from "react";
 import SessionExpiredAlert from "./sessionExpiredAlert";
@@ -14,8 +13,7 @@ import SessionExpiredAlert from "./sessionExpiredAlert";
 
 export default function PostLikeBtn({id, setMessage, children}){
     
-  
-    const dispatch = useDispatch();
+
 
     const queryClient = useQueryClient();
     const {data, isLoading,} = useQuery({
@@ -47,17 +45,15 @@ export default function PostLikeBtn({id, setMessage, children}){
      const likeMutation = useMutation({
         mutationFn: (postId) => likePost(postId),
         mutationKey: ["post_like"],
-        onError: (e) => {
-            if(e.message === "Unauthorized - No tokens found"){
-                setMessage(
-                    <SessionExpiredAlert/>
-                );
-                dispatch(setUserNull());
-            }
-        },
         onSuccess: () => {
             queryClient.invalidateQueries({queryKey: ["postLiked", id]})
             queryClient.invalidateQueries({queryKey: ["posts"]})
+        },
+        onError: () => {
+            setMessage({
+                message: "Failed to like post. Please try again.",
+                status: "error"
+            })
         },
     })
 

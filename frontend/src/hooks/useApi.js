@@ -89,12 +89,56 @@ async function proxyFetch(url, options = {}) {
             // Both tokens failed: Wipe session and throw
             sessionStorage.setItem("guest", JSON.stringify(true));
             const error = await refreshRes.json();
+            window.location.href = '/session-expired';
             throw new Error(error.message || 'Session expired');
         }
     }
 
     return response;
 }
+
+async function tryProxyFetch(url, options = {}) {
+
+    const headers = { ...options.headers };
+    
+    // Only set Content-Type to application/json if it's not FormData and not already set
+    if (!(options.body instanceof FormData) && !headers['Content-Type']) {
+        headers['Content-Type'] = 'application/json';
+    }
+
+    //Set default headers and credentials
+    const defaultOptions = {
+        credentials: 'include',
+        ...options,
+        headers
+    };
+
+    //Attempt the actual request first
+    let response = await fetch(url, defaultOptions);
+
+    //If unauthorized, try to refresh once
+    if (response.status === 401) {
+        const refreshRes = await fetch('/api/auth/refresh-token', {
+            method: "POST",
+            credentials: 'include',
+        });
+
+        if (refreshRes.ok) {
+            // Refresh worked, retry the original request
+         
+            response = await fetch(url, defaultOptions);
+        } else {
+            // Both tokens failed: Wipe session and throw
+            sessionStorage.setItem("guest", JSON.stringify(true));
+            const error = await refreshRes.json();
+            throw new Error(error.message || 'Session expired');
+        }
+    }
+
+    return response;
+}
+
+
 
 async function uploadPost(formData) {
     const res = await proxyFetch(`/api/community_cookbook/uploadPost`, {
@@ -201,4 +245,4 @@ async function getPosts(page) {
 
 
 
-export {register, login, proxyFetch, getRecipes, getRecipe, likeRecipe, likePost, getPosts, postComment, uploadPost};
+export {register, login, proxyFetch, getRecipes, getRecipe, likeRecipe, likePost, getPosts, postComment, uploadPost, tryProxyFetch};

@@ -22,6 +22,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import RecipeLikeBtn from "../components/recipeLikeBtn"
 import SignupCard from "../components/SignupCard"
 import { useSelector } from "react-redux"
+import MessagePopupBottom from "../components/messagePopupBottom"
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react"
 import { useState } from "react"
@@ -42,12 +43,10 @@ export default function RecipeDetail() {
 
     const onLike = () => {
         setMessage(
-            <motion.div animate={{scale: [0, 1]}} className="fixed top-[50%] left-[50%] -translate-[50%] z-50 flex flex-col items-center w-full max-w-sm ">
-                
-                <SignupCard/>
-                <button onClick={() => setMessage(null)} className="absolute right-1 top-1 opacity-50 hover:opacity-70"><X/></button>
-              
-            </motion.div>
+            {
+                message: "Please login to like recipes.",
+                status: "error"
+            }
         )
     }
 
@@ -104,7 +103,9 @@ export default function RecipeDetail() {
                 animate={{ opacity: 1 }}
                 className="min-h-screen bg-background pb-20 pt-10"
             >
-                {message}
+                {message && 
+                    <MessagePopupBottom status={message.status} message={message.message} setMessage={setMessage}/>
+                }
                 <div className="container mx-auto px-4 max-w-5xl">
                     {/* Back Button */}
                     <Link to="/recipe_collection">
@@ -260,7 +261,9 @@ export default function RecipeDetail() {
                             </Card>
                         </div>
                     </div>
+                    
                 </div>
+                
             </motion.div>
         );
     }
