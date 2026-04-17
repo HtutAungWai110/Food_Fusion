@@ -9,6 +9,7 @@ import { proxyFetch } from "../hooks/useApi";
 import {Skeleton} from "@/components/ui/skeleton";
 import { useDispatch } from "react-redux";
 import { getUser } from "../states/UserState";
+// eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react";
 
 

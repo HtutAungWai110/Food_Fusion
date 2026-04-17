@@ -51,7 +51,10 @@ export default function ResetPassword(){
 
             const data = await res.json();
             return data;
-        }
+        },
+        retry: false
+        
+        
     })
 
     const genericPattern = {
