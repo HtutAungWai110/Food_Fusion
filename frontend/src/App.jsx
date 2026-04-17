@@ -57,7 +57,7 @@ function App() {
           </Route>
           <Route element={<ProtectedRoute/>}>
             <Route path="/profile" element={<div>Profile</div>}/>
-            <Route path="/upload_post" element={<UploadPost/>}/>
+            <Route path="/community_cookbook/upload_post" element={<UploadPost/>}/>
           </Route>
           
           <Route path="/forgot-password" element={<ForgotPasswordPage/>}/>

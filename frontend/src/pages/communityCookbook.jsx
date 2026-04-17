@@ -19,7 +19,7 @@ export default function CommunityCookbook() {
     const navigate = useNavigate();
 
      const onUploadClick = () => {
-        navigate("/upload_post");
+        navigate("/community_cookbook/upload_post");
      }
    
 
