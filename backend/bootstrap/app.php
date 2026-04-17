@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->validateCsrfTokens(except: [
             'auth/*',
+            'user/*',
             'recipes/*',
             'community_cookbook/*',
             'feedback/*',

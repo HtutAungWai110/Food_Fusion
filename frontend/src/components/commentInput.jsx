@@ -6,12 +6,16 @@ import { Button } from "@/components/ui/button"
 import { postComment } from "../hooks/useApi";
 import { useQueryClient } from "@tanstack/react-query";
 import { Spinner } from "@/components/ui/spinner"
+import { Skeleton } from "@/components/ui/skeleton"
+import { useSelector } from "react-redux";
 
 export default function CommentInput({ postId, setMessage }) {
 
+  const {data: userData} = useSelector((state) => state.user);
 
 
     const [newComment, setNewComment] = useState("");
+    const [imageLoading, setImageLoading] = useState(true);
     const queryClient = useQueryClient();
 
     const postCommentMutation = useMutation({
@@ -46,10 +50,22 @@ export default function CommentInput({ postId, setMessage }) {
 
     return (
         <div className="flex items-center gap-2 pt-2">
-                  <div className="p-1 rounded-full">
-                    <UserCircle className="w-7 h-7" />
+                  <div className=" rounded-full w-8 h-8 flex items-center justify-center overflow-hidden relative">
+                    {userData?.image_url ? (
+                      <>
+                        {imageLoading && <Skeleton className="w-full h-full rounded-full absolute inset-0 z-10" />}
+                        <img 
+                          src={userData.image_url} 
+                          alt="Me" 
+                          onLoad={() => setImageLoading(false)}
+                          className={`w-full h-full object-cover rounded-full transition-opacity duration-300 ${imageLoading ? 'opacity-0' : 'opacity-100'}`}
+                        />
+                      </>
+                    ) : (
+                      <UserCircle className="w-7 h-7 text-muted-foreground/60" />
+                    )}
                   </div>
-                  <span className="opacity-50">{newComment.length}/500</span>
+                  <span className="opacity-50 text-[10px]">{newComment.length}/500</span>
                   <div className="relative flex-1">
                     
                     <Input

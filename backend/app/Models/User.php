@@ -70,6 +70,17 @@ class User extends Authenticatable implements JWTSubject
         'password',
     ];
 
+    protected $appends = ["image_url"];
+
+    public function getImageUrlAttribute()
+    {
+
+        if ($this->image_path) {
+            return url('storage/' . $this->image_path);
+        }
+        return null;
+    }
+
     /**
      * Get the attributes that should be cast.
      *

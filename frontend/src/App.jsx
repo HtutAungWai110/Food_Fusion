@@ -12,6 +12,7 @@ import ResetPassword from "./pages/resetPassword"
 import CommunityCookbook from "./pages/communityCookbook"
 import UploadPost from "./pages/UploadPost"
 import ContactUs from "./pages/contactUs"
+import Profile from "./pages/profile"
 
 import { ThemeProvider } from "./components/theme-provider"
 import { useEffect } from "react"
@@ -56,7 +57,7 @@ function App() {
             <Route path="/signup" element={<Signup />} />
           </Route>
           <Route element={<ProtectedRoute/>}>
-            <Route path="/profile" element={<div>Profile</div>}/>
+            <Route path="/profile" element={<Profile/>}/>
             <Route path="/community_cookbook/upload_post" element={<UploadPost/>}/>
           </Route>
           

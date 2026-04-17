@@ -16,6 +16,7 @@ function PostCard({ post, setMessage }) {
   const { user, post_description, image_url, likes, created_at, id } = post;
   const [showingComments, setShowingComments] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
+  const [userImageLoading, setUserImageLoading] = useState(true);
 
   // Format date to locale string
   const date = new Date(created_at).toLocaleDateString(undefined, {
@@ -47,8 +48,23 @@ function PostCard({ post, setMessage }) {
       <Card className="border-none shadow-md bg-card/60 backdrop-blur-md hover:shadow-lg transition-shadow duration-300">
         <CardHeader className="flex flex-row items-center justify-between pb-2 px-4 pt-4">
           <div className="flex items-center gap-3">
-            <div className="p-1.5 rounded-full">
-              <UserCircle className="w-8 h-8" />
+            <div className="p-0.5 border-2 border-orange-500 rounded-full">
+              <div className="rounded-full w-10 h-10 flex items-center justify-center overflow-hidden relative">
+                {
+                  user?.image_url ?
+                  <>
+                    {userImageLoading && <Skeleton className="w-full h-full rounded-full absolute inset-0 z-10" />}
+                    <img
+                      src={user?.image_url}
+                      alt={`${user.firstname} ${user.lastname}`}
+                      onLoad={() => setUserImageLoading(false)}
+                      className={`w-full h-full object-cover transition-opacity duration-300 ${userImageLoading ? 'opacity-0' : 'opacity-100'}`}
+                    />
+                  </>
+                  :
+                  <UserCircle className="w-full h-full text-muted-foreground/60" />
+                }
+              </div>
             </div>
             <div className="flex flex-col">
               <span className="font-bold text-sm sm:text-base leading-tight">

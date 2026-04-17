@@ -3,8 +3,8 @@ import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { useMutation } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
-import { memo } from "react";
-import SessionExpiredAlert from "./sessionExpiredAlert";
+import { memo, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton"
 
 import { proxyFetch } from "../hooks/useApi";
 
@@ -13,6 +13,7 @@ import { proxyFetch } from "../hooks/useApi";
 function CommentTemplate({cmt, setMessage}){
 
     const { comment, created_at, user, modifiable, id, post_id} = cmt;
+    const [imageLoading, setImageLoading] = useState(true);
     const queryClient = useQueryClient();
 
 
@@ -45,7 +46,21 @@ function CommentTemplate({cmt, setMessage}){
     })
     return (
         <div className="flex gap-2 relative">
-            <UserCircle className="w-7 h-7 text-muted-foreground shrink-0" />
+            <div className="w-7 h-7  flex items-center justify-center overflow-hidden relative shrink-0 rounded-full">
+                {user?.image_url ? (
+                    <>
+                        {imageLoading && <Skeleton className="w-full h-full rounded-full absolute inset-0 z-10" />}
+                        <img 
+                            src={user.image_url} 
+                            alt={`${user.firstname} ${user.lastname}`} 
+                            onLoad={() => setImageLoading(false)}
+                            className={`w-full h-full object-cover rounded-full transition-opacity duration-300 ${imageLoading ? 'opacity-0' : 'opacity-100'}`}
+                        />
+                    </>
+                ) : (
+                    <UserCircle className="w-full h-full text-muted-foreground/60" />
+                )}
+            </div>
             <div className="flex flex-col bg-muted/30 p-2 rounded-lg text-sm w-full">
                 <span className="font-semibold text-xs mb-0.5">
                 {user.firstname} {user.lastname} 

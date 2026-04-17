@@ -13,7 +13,7 @@ class CommunityCookbookControlller extends Controller
 {
     public function getPosts(){
         try {
-        $posts = CommunityCookbook::with('user:id,firstname,lastname,email')
+        $posts = CommunityCookbook::with('user:id,firstname,lastname,email,image_path')
             ->orderBy('created_at', 'desc');
         return response()->json($posts->paginate(12), 200);
         } catch (\Exception $e) {
@@ -155,7 +155,7 @@ class CommunityCookbookControlller extends Controller
             }
 
             $comments = CommunityCookbookComment::where('post_id', $postId)
-                ->with('user:id,firstname,lastname,email')
+                ->with('user:id,firstname,lastname,email,image_path')
                 ->get();
 
 
