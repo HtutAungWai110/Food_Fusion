@@ -30,6 +30,7 @@ Route::prefix('auth')->group(function () {
 Route::prefix('user')->group(function () {
     Route::get('/info', [UserController::class, 'userInfo']);
     Route::post('/uploadAvatar', [UserController::class, 'uploadAvatar'])->middleware('auth');
+    Route::get('/getPosts', [UserController::class, 'getUserPosts'])->middleware('auth');
 
 });
 

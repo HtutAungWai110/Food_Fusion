@@ -24,9 +24,10 @@ export default function CommunityCookbook() {
    
 
     const { data: posts, isLoading, error } = useQuery({
-        queryKey: ["posts"],
+        queryKey: ["posts", page],
         queryFn: () =>  getPosts(page),
-        staleTime: 15,
+        staleTime: 5 * 60 * 1000,
+        
     })
 
 

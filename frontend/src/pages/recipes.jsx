@@ -1,4 +1,4 @@
-import { useQueryClient, useQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { getRecipes } from "../hooks/useApi"
 import RecipeCard from "../components/recipeCard"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -10,7 +10,7 @@ import {
   ComboboxItem,
   ComboboxList,
 } from "@/components/ui/combobox"
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState } from "react"
 import Pagination from "../components/pagination"
 import { Search } from "lucide-react"
 
@@ -22,13 +22,12 @@ export default function Recipes() {
   const [difficulty, setDifficulty] = useState( JSON.parse(sessionStorage.getItem("difficulty")) || "Any");
   const [page, setPage] = useState( JSON.parse(sessionStorage.getItem("page")) || 1);
   const [search, setSearch] = useState("");
-  const queryClient = useQueryClient();
-
-  const timeoutRef = useRef(null);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["recipes"],
-    queryFn: () => getRecipes(cuisine, difficulty, page, search),
+    queryKey: ["recipes", cuisine, difficulty, page, debouncedSearch],
+    queryFn: () => getRecipes(cuisine, difficulty, page, debouncedSearch),
+    staleTime: 5 * 60 * 1000,
   })
 
   useEffect(() => {
@@ -36,6 +35,14 @@ export default function Recipes() {
     sessionStorage.setItem("difficulty", JSON.stringify(difficulty));
     sessionStorage.setItem("page", JSON.stringify(page));
   }, [cuisine, difficulty, page])
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 500);
+
+    return () => clearTimeout(handler);
+  }, [search]);
 
   const cuisines = [
     "All", "Thai", "Italian", "Indian", "Japanese", "Mexican", "Chinese", "Mediterranean"
@@ -47,8 +54,7 @@ export default function Recipes() {
 
   useEffect(() => {
     window.scrollTo({top: 0, left: 0, behavior: 'smooth'});
-    queryClient.invalidateQueries({queryKey: ["recipes"]})
-  }, [cuisine, difficulty, page, queryClient])
+  }, [cuisine, difficulty, page, debouncedSearch])
 
   const handleCuisineChange = (val) => {
     setCuisine(val);
@@ -61,16 +67,8 @@ export default function Recipes() {
 
 
   const handleSearchChange = (e) => {
-    setSearch(e.target.value.trim());
-    if(timeoutRef.current){
-      clearTimeout(timeoutRef.current);
-    }
-
-    timeoutRef.current = setTimeout(() => {
-      setPage(1);
-      queryClient.invalidateQueries({queryKey: ["recipes"]})
-    }, 500);
-
+    setSearch(e.target.value);
+    setPage(1);
   }
 
   const container = {

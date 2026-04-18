@@ -4,11 +4,13 @@ import { useState, useCallback, useEffect } from "react";
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from "../lib/croppImage";
 import { Card, CardContent } from "@/components/ui/card";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { proxyFetch } from "../hooks/useApi";
-import {Skeleton} from "@/components/ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useDispatch } from "react-redux";
 import { getUser } from "../states/UserState";
+import PostCard from "../components/postCard";
+import MessageBox from "../components/MessageBox";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react";
 
@@ -16,7 +18,21 @@ import { motion } from "motion/react";
 export default function Profile() {
   const { data: userData } = useSelector((state) => state.user);
   const dispatch = useDispatch();
+  const [message, setMessage] = useState(null);
 
+  const { data: userPosts, isLoading: postsLoading } = useQuery({
+    queryKey: ["userPosts", userData?.id],
+    queryFn: async () => {
+      const response = await proxyFetch("/api/user/getPosts", {
+        method: "GET",
+      });
+
+      const data = await response.json()
+      return data
+    },
+    staleTime: 15 * 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+  });
 
   useEffect(() => {
     console.log(userData)
@@ -185,36 +201,61 @@ export default function Profile() {
 
           {/* Activity Section */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="md:col-span-1 border-none shadow-lg bg-card/50 backdrop-blur-sm overflow-hidden">
+            <Card className="md:col-span-1 border-none shadow-lg bg-card/50 backdrop-blur-sm h-fit sticky top-24">
                 <CardContent className="p-8">
                     <h3 className="font-bold text-xl mb-6 flex items-center gap-2 text-foreground">
                         Statistics
                     </h3>
                     <div className="grid grid-cols-1 gap-4">
                         <div className="bg-muted/50 p-6 rounded-2xl text-center group hover:bg-orange-500/5 transition-colors">
-                            <p className="text-3xl font-bold text-orange-500 group-hover:scale-110 transition-transform">0</p>
-                            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1">Recipes Shared</p>
+                            <p className="text-3xl font-bold text-orange-500 group-hover:scale-110 transition-transform">{userPosts?.data?.length || 0}</p>
+                            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1">Posts Shared</p>
                         </div>
                         <div className="bg-muted/50 p-6 rounded-2xl text-center group hover:bg-orange-500/5 transition-colors">
-                            <p className="text-3xl font-bold text-orange-500 group-hover:scale-110 transition-transform">0</p>
+                            <p className="text-3xl font-bold text-orange-500 group-hover:scale-110 transition-transform">
+                                {userPosts?.data?.reduce((acc, post) => acc + (post.likes || 0), 0) || 0}
+                            </p>
                             <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1">Likes Received</p>
                         </div>
                     </div>
                 </CardContent>
             </Card>
 
-            <div className="md:col-span-2 bg-muted/20 rounded-[2.5rem] border-2 border-dashed border-muted-foreground/20 p-12 flex flex-col items-center justify-center text-center gap-6 group hover:border-orange-500/30 transition-colors duration-500">
-                <div className="w-20 h-20 bg-muted-foreground/10 rounded-full flex items-center justify-center">
-                    <UserCircle className="w-10 h-10 text-muted-foreground/30 group-hover:text-orange-500/30 transition-colors" />
-                </div>
-                <div>
-                    <h4 className="text-xl font-bold text-foreground">No activities found</h4>
-                    <p className="text-muted-foreground max-w-xs mx-auto mt-2">
-                        Start sharing your culinary expertise to build your profile feed!
-                    </p>
-                </div>
+            <div className="md:col-span-2 space-y-6">
+                {postsLoading ? (
+                  Array.from({ length: 3 }).map((_, i) => (
+                    <Card key={i} className="border-none shadow-md bg-card/60 p-6 space-y-4">
+                      <div className="flex items-center gap-3">
+                        <Skeleton className="w-10 h-10 rounded-full" />
+                        <div className="space-y-2">
+                          <Skeleton className="h-4 w-32" />
+                          <Skeleton className="h-3 w-20" />
+                        </div>
+                      </div>
+                      <Skeleton className="h-24 w-full rounded-xl" />
+                      <Skeleton className="h-64 w-full rounded-xl" />
+                    </Card>
+                  ))
+                ) : userPosts?.data?.length > 0 ? (
+                  userPosts.data.map((post) => (
+                    <PostCard key={post.id} post={post} setMessage={setMessage} />
+                  ))
+                ) : (
+                  <div className="bg-muted/20 rounded-[2.5rem] border-2 border-dashed border-muted-foreground/20 p-12 flex flex-col items-center justify-center text-center gap-6 group hover:border-orange-500/30 transition-colors duration-500">
+                      <div className="w-20 h-20 bg-muted-foreground/10 rounded-full flex items-center justify-center">
+                          <UserCircle className="w-10 h-10 text-muted-foreground/30 group-hover:text-orange-500/30 transition-colors" />
+                      </div>
+                      <div>
+                          <h4 className="text-xl font-bold text-foreground">No activities found</h4>
+                          <p className="text-muted-foreground max-w-xs mx-auto mt-2">
+                              Start sharing your culinary expertise to build your profile feed!
+                          </p>
+                      </div>
+                  </div>
+                )}
             </div>
           </div>
+          {message && <MessageBox message={message.message} status={message.status} setMessage={setMessage} />}
         </motion.div>
       </div>
     </div>

@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
 use App\Models\User;
+use App\Models\CommunityCookbook;
+
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -60,5 +62,22 @@ class UserController extends Controller
             ], 500);
         }
 
+    }
+
+    public function getUserPosts(Request $req){
+        $userId = $req->attributes->get('user_id');
+
+        try {
+            $posts = CommunityCookbook::where('user_id', $userId)->with('user:id,firstname,lastname,email,image_path')
+            ->orderBy('created_at', 'desc')->paginate(10);
+
+            return response()->json($posts, 200);
+
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to fetch posts'
+            ], 500);
+        }
     }
 }
