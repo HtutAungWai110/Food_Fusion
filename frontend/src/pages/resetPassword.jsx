@@ -52,7 +52,8 @@ export default function ResetPassword(){
             const data = await res.json();
             return data;
         },
-        retry: false
+        retry: false,
+        staleTime: 5,
         
         
     })

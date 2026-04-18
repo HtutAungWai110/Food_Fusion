@@ -27,7 +27,8 @@ export default function CommentWrapper({postId, setMessage}){
             const data = await res.json();
             return data;
         },
-        queryKey: ["comments", postId]
+        queryKey: ["comments", postId],
+        staleTime: 3,
     })
 
 

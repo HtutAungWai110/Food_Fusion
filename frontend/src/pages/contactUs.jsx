@@ -25,9 +25,9 @@ export default function ContactUs() {
   const {data: userData} = useSelector((state) => state.user);
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
     defaultValues: {
-      firstname: userData?.firstname || "Jane",
-      lastname: userData?.lastname || "Doe",
-      email: userData?.email || "jane@example.com"
+      firstname: userData?.firstname || "",
+      lastname: userData?.lastname || "",
+      email: userData?.email || ""
     }
   });
   const [message, setMessage] = useState(null);

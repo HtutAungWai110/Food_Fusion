@@ -18,7 +18,8 @@ export default function FeturedRecipes(){
 
             const data = await res.json();
             return data;
-        }
+        },
+        staleTime: Infinity
     })
 
     return (

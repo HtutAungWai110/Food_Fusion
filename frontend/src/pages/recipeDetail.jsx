@@ -37,6 +37,8 @@ export default function RecipeDetail() {
         queryKey: ["recipe", id],
         queryFn: () => getRecipe(id),
         enabled: !!id,
+        staleTime: 15,
+        gcTime: 10,
     })
 
     const {data: userData} = useSelector(state => state.user);
