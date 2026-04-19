@@ -28,7 +28,7 @@ export default function CommentWrapper({postId, setMessage}){
             return data;
         },
         queryKey: ["comments", postId],
-        staleTime: 3,
+        staleTime: 3 * 60 * 1000,
     })
 
 

@@ -28,7 +28,7 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::prefix('user')->group(function () {
-    Route::get('/info', [UserController::class, 'userInfo']);
+    Route::get('/info', [UserController::class, 'userInfo'])->middleware('auth');
     Route::post('/uploadAvatar', [UserController::class, 'uploadAvatar'])->middleware('auth');
     Route::get('/getPosts', [UserController::class, 'getUserPosts'])->middleware('auth');
 
@@ -50,13 +50,11 @@ Route::prefix('community_cookbook')->group(function () {
     Route::get('/getComments', [CommunityCookbookControlller::class, "getComments"]);
     Route::delete('/deleteComment', [CommunityCookbookControlller::class, "deleteComment"])->middleware('auth');
     Route::post('/uploadPost', [CommunityCookbookControlller::class, "createPost"])->middleware('auth');
+    Route::put('/updateComment', [CommunityCookbookControlller::class, "updateComment"])->middleware('auth');
 });
 
 Route::prefix('feedback')->group(function () {
     Route::post('/submit', [FeedbackController::class, 'submitFeedback']);
-
-
-
 });
 
 

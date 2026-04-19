@@ -26,10 +26,6 @@ class CommunityCookbookComment extends Model
 
     protected $appends = ['modifiable'];
 
-    // protected $attributes = [
-    //     'modifiable' => false,
-    // ];
-
     public function getModifiableAttribute(): bool
     {
         return $this->attributes['modifiable'] ?? false;

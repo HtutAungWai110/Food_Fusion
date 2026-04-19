@@ -29,7 +29,9 @@ export default function CommentInput({ postId, setMessage }) {
         },
       onSuccess: (data) => {
         console.log(data);
-        queryClient.invalidateQueries(["comments", postId]);
+        queryClient.invalidateQueries({
+          queryKey: ["comments", postId]
+        });
         setNewComment("");
       }
     })

@@ -104,9 +104,12 @@ function PostCard({ post, setMessage }) {
 
               { userData ? 
 
-             <PostLikeBtn id={id} setMessage={setMessage}>
-                <span className="text-xs font-semibold">{likes}</span>
-              </PostLikeBtn>
+             <PostLikeBtn id={id} setMessage={setMessage} likes={likes}>
+              <span className="text-xs font-semibold">{likes}</span>
+             </PostLikeBtn >
+              
+                
+            
               :
               <Button onClick={onLike} variant="ghost" size="sm" className="hover:text-rose-500 gap-1.5 px-2 h-9">
                 <Heart className="w-4 h-4" />

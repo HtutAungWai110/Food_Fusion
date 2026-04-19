@@ -7,7 +7,7 @@ import { memo, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton"
 
 import { proxyFetch } from "../hooks/useApi";
-
+import { Textarea } from "@/components/ui/textarea";
 
 
 function CommentTemplate({cmt, setMessage}){
@@ -15,6 +15,8 @@ function CommentTemplate({cmt, setMessage}){
     const { comment, created_at, user, modifiable, id, post_id} = cmt;
     const [imageLoading, setImageLoading] = useState(true);
     const queryClient = useQueryClient();
+    const [editing, setEditing] = useState(false);
+    const [newComment, setNewComment] = useState(comment)
 
 
     const deleteCommentMutation = useMutation({
@@ -41,9 +43,49 @@ function CommentTemplate({cmt, setMessage}){
             })
         },
         onSuccess: () => {
-            queryClient.invalidateQueries(["comments", post_id]);
+            queryClient.invalidateQueries({
+                queryKey: ["comments", post_id]
+            });
         }
     })
+
+
+    const updateCommentMutation = useMutation({
+        mutationFn: async () => {
+            const res = await proxyFetch(`/api/community_cookbook/updateComment?id=${id}&postId=${post_id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({newComment: newComment.trim()})
+            })
+            if(!res.ok) {
+                const error = await res.json();
+                throw new Error(`Status: ${res.status}, ${error.message}`)
+            }
+
+            return await res.json();
+        },
+        mutationKey: ["update_comment", id],
+        onError: () => {
+            setMessage({
+                message: "Failed to update comment. Please try again.",
+                status: "error"
+            })
+        },
+        onSuccess: () => {
+            setEditing(false)
+            queryClient.invalidateQueries({
+                queryKey: ["comments", post_id]
+            })
+        }
+    })
+
+    const handleUpdateComment = () => {
+        if (newComment.trim() === "")return;
+        if(newComment.trim() === comment.trim())return;
+        updateCommentMutation.mutate();
+    }
     return (
         <div className="flex gap-2 relative">
             <div className="w-7 h-7  flex items-center justify-center overflow-hidden relative shrink-0 rounded-full">
@@ -66,18 +108,45 @@ function CommentTemplate({cmt, setMessage}){
                 {user.firstname} {user.lastname} 
                 </span>
                 <span className="opacity-50">({user.email})</span>
+                {editing ?
+                <>
+                    <Textarea 
+                    className="min-h-[100px] text-lg p-4 focus:border-none"
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
                 
-                <p className="text-foreground/90">{comment}</p>
-                <span className="text-[10px] text-muted-foreground mt-1">
-                {new Date(created_at).toLocaleString([], { 
-                    month: 'short', 
-                    day: 'numeric', 
-                    hour: '2-digit', 
-                    minute: '2-digit' 
-                })}
-                </span>
+                    />
+                    <div className="flex justify-end m-2 gap-1">
+                        <Button 
+                        disabled={updateCommentMutation.isPending}
+                        onClick={handleUpdateComment}
+                        className="flex"
+                        >Update {updateCommentMutation.isPending && <Spinner/>}</Button>
+                        <Button 
+                        onClick={() => {setEditing(false), setNewComment(comment)}}
+                        variant="ghost"
+                        className="border border-foreground"
+                        >Cancle</Button>
+                    </div>
+                </>
+                    : 
+
+                    <>
+                        <p className="text-foreground/90">{comment}</p>
+                        <span className="text-[10px] text-muted-foreground mt-1">
+                        {new Date(created_at).toLocaleString([], { 
+                            month: 'short', 
+                            day: 'numeric', 
+                            hour: '2-digit', 
+                            minute: '2-digit' 
+                        })}
+                        </span>
+                    </>
+                }
+                
+                
             </div>
-            {modifiable && 
+            {modifiable && !editing &&
             
                 <div className="flex gap-2 items-center absolute right-0">
 
@@ -90,7 +159,7 @@ function CommentTemplate({cmt, setMessage}){
                          {deleteCommentMutation.isPending || deleteCommentMutation.isSuccess ? <Spinner/> : "Delete"}
                     </Button>
                     <Button 
-                
+                    onClick={() => setEditing(true)}
                     variant="ghost" 
                     className=" text-muted-foreground hover:bg-transparent p-2 border">
                         Edit

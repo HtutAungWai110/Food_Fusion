@@ -39,7 +39,9 @@ export default function UploadPost() {
     mutationFn: (formData) => uploadPost(formData),
     onSuccess: (data) => {
       setMessage(<MessageBox status="success" message={data.message} />);
-      queryClient.invalidateQueries(["posts"]);
+      queryClient.invalidateQueries({
+        queryKey: ["posts"]
+      });
       setTimeout(() => {
         navigate("/community_cookbook");
       }, 2000);

@@ -243,4 +243,51 @@ class CommunityCookbookControlller extends Controller
         }
     }
 
+    public function updateComment(Request $req){
+        $userId = $req->attributes->get("user_id");
+
+        $validator = Validator::make($req->all(), [
+            "newComment" => 'required|string|max:500',
+            "id" => "required|string",
+            "postId" => "required|string",
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors'  => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            $commentId = $req->query('id');
+            $postId = $req->query('postId');
+            $newComment = $req->input("newComment");
+
+            $comment = CommunityCookbookComment::where([
+                "id" => $commentId,
+                "post_id" => $postId,
+                "user_id" => $userId
+            ])->first();
+
+            if(!$comment){
+                return response()->json([
+                    'message' => 'Comment trying to update not found!'
+                ], 402);
+            }
+
+            $comment->comment = $newComment;
+            $comment->save();
+
+            return response()->json([
+                'message'=> 'Comment updated successfully'
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to create post'
+            ], 500);
+        }
+    }
+
 }
