@@ -44,6 +44,7 @@ Route::prefix('recipes')->group(function () {
 
 Route::prefix('community_cookbook')->group(function () {
     Route::get('/getPosts', [CommunityCookbookControlller::class, "getPosts"]);
+    Route::get('/getPost', [CommunityCookbookControlller::class, "getPost"]);
     Route::post('/likePost', [CommunityCookbookControlller::class, "likePost"])->middleware('auth');
     Route::get('/isLiked', [CommunityCookbookControlller::class, "isLiked"])->middleware('auth');
     Route::post('/postComment', [CommunityCookbookControlller::class, "postComment"])->middleware('auth');
@@ -51,6 +52,7 @@ Route::prefix('community_cookbook')->group(function () {
     Route::delete('/deleteComment', [CommunityCookbookControlller::class, "deleteComment"])->middleware('auth');
     Route::post('/uploadPost', [CommunityCookbookControlller::class, "createPost"])->middleware('auth');
     Route::put('/updateComment', [CommunityCookbookControlller::class, "updateComment"])->middleware('auth');
+
 });
 
 Route::prefix('feedback')->group(function () {

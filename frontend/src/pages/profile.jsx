@@ -238,7 +238,7 @@ export default function Profile() {
                   ))
                 ) : userPosts?.data?.length > 0 ? (
                   userPosts.data.map((post) => (
-                    <PostCard key={post.id} post={post} setMessage={setMessage} />
+                    <PostCard key={post.id} initialData={post} setMessage={setMessage} />
                   ))
                 ) : (
                   <div className="bg-muted/20 rounded-[2.5rem] border-2 border-dashed border-muted-foreground/20 p-12 flex flex-col items-center justify-center text-center gap-6 group hover:border-orange-500/30 transition-colors duration-500">

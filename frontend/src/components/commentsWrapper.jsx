@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import CommentTemplate from "./commentTemplate";
-import { useEffect } from "react";
 import { proxyFetch } from "../hooks/useApi";
 
 export default function CommentWrapper({postId, setMessage}){
@@ -32,10 +31,6 @@ export default function CommentWrapper({postId, setMessage}){
     })
 
 
-    useEffect(() => {
-        console.log(comments)
-    }, [comments])
-   
 
     if(isLoading) return <p>Loading comments...</p>
     if(error) return <p className="text-red-500 text-sm">Error loading comments: {error.message}</p>

@@ -45,8 +45,9 @@ export default function PostLikeBtn({id, setMessage, children}){
             })
 
             queryClient.invalidateQueries({
-                queryKey: ["posts"]
+                queryKey: ["post", id]
             })
+
         },
         onError: () => {
             setMessage({

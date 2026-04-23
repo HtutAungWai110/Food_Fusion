@@ -1,26 +1,46 @@
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Heart, MessageCircle, Share2, UserCircle, X } from "lucide-react"
+import { Heart, MessageCircle, Share2, UserCircle, X, MoreHorizontal } from "lucide-react"
 import PostLikeBtn from "./postLikeBtn"
-import { memo, useState } from "react"
+import { memo, useEffect, useState } from "react"
 import SignupCard from "./SignupCard"
 import { Link } from "react-router-dom"
 import CommentInput from "./commentInput"
 import CommentWrapper from "./commentsWrapper"
 import { useSelector } from "react-redux"
 import {Skeleton} from "@/components/ui/skeleton"
+import { proxyFetch } from "../hooks/useApi"
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "motion/react"
 import { useQuery } from "@tanstack/react-query"
 
 function PostCard({ initialData, setMessage }) {
 
-  const {data: post, loading, error} = useQuery({
-    queryKey: ["post", post.id],
+  const {data: post, error} = useQuery({
+    queryKey: ["post", initialData.id],
     initialData: initialData,
-    
+    queryFn: async () => {
+        const isGuest = JSON.parse(sessionStorage.getItem("guest"));
+        let res;
+        if(isGuest){
+          res = await fetch(`/api/community_cookbook/getPost?postId=${initialData.id}`, {
+            method: "GET"
+          })
+        } else {
+          res = await proxyFetch(`/api/community_cookbook/getPost?postId=${initialData.id}`, {
+            method: "GET"
+          })
+        }
+
+        if(!res.ok){
+          const error = await res.json();
+          throw new Error(error.message)
+        }
+        const data = await res.json();
+        return data
+  }
   })
-  const { user, post_description, image_url, likes, created_at, id } = post;
+  const { user, post_description, image_url, likes, created_at, id, modifiable } = post;
   const [showingComments, setShowingComments] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
   const [userImageLoading, setUserImageLoading] = useState(true);
@@ -41,6 +61,11 @@ function PostCard({ initialData, setMessage }) {
         )
   }
 
+  useEffect(() => {
+    if(error){
+      console.error(error)
+    }
+  }, [error])
   
 
   const {data: userData} = useSelector(state => state.user);
@@ -80,6 +105,14 @@ function PostCard({ initialData, setMessage }) {
               <span className="text-[10px] sm:text-xs text-muted-foreground">{date}</span>
             </div>
           </div>
+
+          {
+            modifiable &&
+            <Button
+            variant="ghost"
+            ><MoreHorizontal/>
+            </Button>
+          }
         </CardHeader>
 
         <CardContent className="space-y-4 pt-2 px-4">
@@ -109,7 +142,7 @@ function PostCard({ initialData, setMessage }) {
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-1">
 
-              {/* { userData ? 
+              { userData ? 
 
              <PostLikeBtn id={id} setMessage={setMessage} likes={likes}>
               <span className="text-xs font-semibold">{likes}</span>
@@ -123,7 +156,7 @@ function PostCard({ initialData, setMessage }) {
                 <span className="text-xs font-semibold">{likes}</span>
               </Button>
               }
-               */}
+              
               
               <Button onClick={() => setShowingComments(prev => !prev)} variant="ghost" size="sm" className={`hover:text-blue-500 gap-1.5 px-2 h-9 ${showingComments ? "text-blue-500" : ""}`}>
                 <MessageCircle className="w-4 h-4" />
@@ -149,7 +182,7 @@ function PostCard({ initialData, setMessage }) {
             >
               <div className="mt-4 pt-4 border-t space-y-4 p-5 max-h-[200px] overflow-y-auto">
                 {/* Comments Display List */}
-                {/* <CommentWrapper postId={id} setMessage={setMessage}/> */}
+                <CommentWrapper postId={id} setMessage={setMessage}/>
                 {/* New Comment Input */}
              
               

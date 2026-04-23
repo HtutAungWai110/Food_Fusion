@@ -11,11 +11,21 @@ use Illuminate\Support\Facades\Validator;
 
 class CommunityCookbookControlller extends Controller
 {
-    public function getPosts(){
+    public function getPosts(Request $req){
+        $userId = $this->getUserIdFromCookie($req);
         try {
-        $posts = CommunityCookbook::with('user:id,firstname,lastname,email,image_path')
-            ->orderBy('created_at', 'desc');
-        return response()->json($posts->paginate(12), 200);
+            $paginatedPosts = CommunityCookbook::with('user:id,firstname,lastname,email,image_path')
+
+                ->orderBy('created_at', 'desc')
+                ->paginate(12);
+
+            if($userId){
+                foreach ($paginatedPosts as $post){
+                    $post->setAttribute('modifiable', $userId === $post->user_id);
+                }
+            }
+
+            return response()->json($paginatedPosts, 200);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to fetch resources'
@@ -33,7 +43,6 @@ class CommunityCookbookControlller extends Controller
                 'message' => 'post_id is required'
             ], 400);
         }
-
 
         try {
             $post = CommunityCookbook::find($postId);
@@ -138,7 +147,7 @@ class CommunityCookbookControlller extends Controller
     }
 
     public function getComments(Request $req){
-        $accessToken = $req->cookie('access_token');
+        $userId = $this->getUserIdFromCookie($req);
         $postId = $req->query('id');
 
         if(!$postId){
@@ -148,11 +157,6 @@ class CommunityCookbookControlller extends Controller
         }
 
         try {
-            $userId = null;
-            if ($accessToken) {
-                $payload = auth('api')->setToken($accessToken)->getPayload();
-                $userId = $payload->get('sub');
-            }
 
             $comments = CommunityCookbookComment::where('post_id', $postId)
                 ->with('user:id,firstname,lastname,email,image_path')
@@ -289,5 +293,61 @@ class CommunityCookbookControlller extends Controller
             ], 500);
         }
     }
+
+    public function getPost(Request $req){
+
+        $userId = $this->getUserIdFromCookie($req);
+        $postId = $req->query('postId') | $req->input('postId');
+
+        $validator = Validator::make($req->all(), [
+            'userId' => 'string',
+            'postId' => 'string',
+        ]);
+
+
+        if ($validator->fails()) {
+        return response()->json([
+            'message' => 'Validation failed',
+            'errors'  => $validator->errors()
+        ], 422);
+        }
+
+        try {
+            $post = CommunityCookbook::where([
+                'id' => $postId,
+            ])->with('user:id,firstname,lastname,email,image_path')->first();
+
+            if(!$post){
+                return response()->json([
+                    'message'=> 'Post not found'
+                ], 404);
+            }
+
+            if($userId){
+                $post->setAttribute('modifiable', $userId === $post->user_id);
+            }
+
+            return response()->json($post, 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 500);
+        }
+
+
+    }
+
+    private function getUserIdFromCookie(Request $req){
+        $accessToken = $req->cookie('access_token');
+        if ($accessToken) {
+                $payload = auth('api')->setToken($accessToken)->getPayload();
+                $userId = $payload->get('sub');
+                return $userId;
+        }
+
+        return null;
+    }
+
+
 
 }

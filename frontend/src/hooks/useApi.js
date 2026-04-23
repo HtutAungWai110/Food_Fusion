@@ -230,9 +230,21 @@ async function postComment(newComment, postId) {
 }
 
 async function getPosts(page) {
-    const res = await fetch(`/api/community_cookbook/getPosts?page=${page}`, {
-        method: "GET"
-    })   
+     
+    const isGuest = JSON.parse(sessionStorage.getItem("guest"));
+    let res;
+    if (isGuest){
+        res = await fetch(`/api/community_cookbook/getPosts?page=${page}`, {
+            method: "GET"
+        })   
+    } else {
+        res = await proxyFetch(`/api/community_cookbook/getPosts?page=${page}`, {
+        method: "GET",
+        credentials: 'include'
+        })   
+    }
+
+    
 
     if(!res.ok){
         const error = await res.json();

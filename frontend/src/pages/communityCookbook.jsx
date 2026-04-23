@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { getPosts } from "../hooks/useApi"
-import {  useState } from "react"
+import {  useEffect, useState } from "react"
 import PostCard from "../components/postCard"
 import Pagination from "../components/pagination"
 import { Spinner } from "@/components/ui/spinner"
@@ -29,6 +29,9 @@ export default function CommunityCookbook() {
         staleTime: 5 * 60 * 1000,
         
     })
+    useEffect(() => {
+        console.log(posts)
+    }, [posts])
 
 
 
