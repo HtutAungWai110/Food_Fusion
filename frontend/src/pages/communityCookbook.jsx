@@ -93,7 +93,7 @@ export default function CommunityCookbook() {
                         <div className="space-y-6">
                             {posts?.data?.length > 0 ? (
                                 posts.data.map((post) => (
-                                    <PostCard key={post.id} post={post} setMessage={setMessage}/>
+                                    <PostCard key={post.id} initialData={post} setMessage={setMessage}/>
                                 ))
                             ) : (
                                 <motion.div 

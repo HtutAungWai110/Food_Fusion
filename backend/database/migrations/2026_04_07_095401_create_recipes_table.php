@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('recipes', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('user_id')->constrained('users')->onDelete('cascade');
-
             $table->string('title');
             $table->text('description')->nullable();
             $table->string('cuisine'); // e.g., Italian, Chinese, Indian, Mexican, etc.

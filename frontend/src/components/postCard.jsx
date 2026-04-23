@@ -11,8 +11,15 @@ import { useSelector } from "react-redux"
 import {Skeleton} from "@/components/ui/skeleton"
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "motion/react"
+import { useQuery } from "@tanstack/react-query"
 
-function PostCard({ post, setMessage }) {
+function PostCard({ initialData, setMessage }) {
+
+  const {data: post, loading, error} = useQuery({
+    queryKey: ["post", post.id],
+    initialData: initialData,
+    
+  })
   const { user, post_description, image_url, likes, created_at, id } = post;
   const [showingComments, setShowingComments] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
@@ -102,7 +109,7 @@ function PostCard({ post, setMessage }) {
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-1">
 
-              { userData ? 
+              {/* { userData ? 
 
              <PostLikeBtn id={id} setMessage={setMessage} likes={likes}>
               <span className="text-xs font-semibold">{likes}</span>
@@ -116,7 +123,7 @@ function PostCard({ post, setMessage }) {
                 <span className="text-xs font-semibold">{likes}</span>
               </Button>
               }
-              
+               */}
               
               <Button onClick={() => setShowingComments(prev => !prev)} variant="ghost" size="sm" className={`hover:text-blue-500 gap-1.5 px-2 h-9 ${showingComments ? "text-blue-500" : ""}`}>
                 <MessageCircle className="w-4 h-4" />
@@ -142,7 +149,7 @@ function PostCard({ post, setMessage }) {
             >
               <div className="mt-4 pt-4 border-t space-y-4 p-5 max-h-[200px] overflow-y-auto">
                 {/* Comments Display List */}
-                <CommentWrapper postId={id} setMessage={setMessage}/>
+                {/* <CommentWrapper postId={id} setMessage={setMessage}/> */}
                 {/* New Comment Input */}
              
               
