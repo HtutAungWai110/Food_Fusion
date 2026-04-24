@@ -6,8 +6,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { memo, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton"
 
-import { proxyFetch } from "../hooks/useApi";
 import { Textarea } from "@/components/ui/textarea";
+import apiClient from "../lib/client";
 
 
 function CommentTemplate({cmt, setMessage}){
@@ -21,19 +21,14 @@ function CommentTemplate({cmt, setMessage}){
 
     const deleteCommentMutation = useMutation({
         mutationFn: async () => {
-            const res = await proxyFetch(`/api/community_cookbook/deleteComment?id=${id}&post_id=${post_id}`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            })
-
-            if(!res.ok) {
-                const error = await res.json();
-                throw new Error(`Status: ${res.status}, ${error.message}`)
+            try {
+                const res = await apiClient.delete(`/community_cookbook/deleteComment`, {
+                    params: { id, post_id }
+                });
+                return res.data;
+            } catch (error) {
+                throw new Error(`Status: ${error.response?.status}, ${error.response?.data?.message || error.message}`);
             }
-
-            return await res.json();
         },
         mutationKey: ["delete_comment", id],
         onError: () => {
@@ -52,19 +47,14 @@ function CommentTemplate({cmt, setMessage}){
 
     const updateCommentMutation = useMutation({
         mutationFn: async () => {
-            const res = await proxyFetch(`/api/community_cookbook/updateComment?id=${id}&postId=${post_id}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({newComment: newComment.trim()})
-            })
-            if(!res.ok) {
-                const error = await res.json();
-                throw new Error(`Status: ${res.status}, ${error.message}`)
+            try {
+                const res = await apiClient.put(`/community_cookbook/updateComment?id=${id}&postId=${post_id}`, {
+                    newComment: newComment.trim()
+                });
+                return res.data;
+            } catch (error) {
+                throw new Error(`Status: ${error.response?.status}, ${error.response?.data?.message || error.message}`);
             }
-
-            return await res.json();
         },
         mutationKey: ["update_comment", id],
         onError: () => {

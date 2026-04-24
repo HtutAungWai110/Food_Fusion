@@ -15,6 +15,7 @@ import { Spinner } from "@/components/ui/spinner"
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import apiClient from "../lib/client";
 
 export default function ForgotPasswordPage(){
 
@@ -23,23 +24,12 @@ export default function ForgotPasswordPage(){
 
     const resetMutation = useMutation({
         mutationFn: async (formData) => {
-            const res = await fetch("/api/auth/forgot-password", {
-                method: "POST",
-                headers: {
-                    'Content-Type': "application/json"
-                },
-                body: JSON.stringify(formData)
-            })
-
-            
-
-            if(!res.ok){
-                const error = await res.json();
-                throw new Error(error.message);
+            try {
+                const res = await apiClient.post("/auth/forgot-password", formData);
+                return res.data;
+            } catch (error) {
+                throw new Error(error.response?.data?.message || error.message);
             }
-
-            const data = await res.json();
-            return data;
         },
         mutationKey: ["password_reset"],
         onSuccess: (data) => {

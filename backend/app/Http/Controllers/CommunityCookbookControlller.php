@@ -15,15 +15,16 @@ class CommunityCookbookControlller extends Controller
         $userId = $this->getUserIdFromCookie($req);
         try {
             $paginatedPosts = CommunityCookbook::with('user:id,firstname,lastname,email,image_path')
-
+                ->withExists(['likes as isLiked' => function($query) use ($userId){
+                    $query->where('user_id', $userId);
+                }] )
                 ->orderBy('created_at', 'desc')
                 ->paginate(12);
 
-            if($userId){
                 foreach ($paginatedPosts as $post){
-                    $post->setAttribute('modifiable', $userId === $post->user_id);
+                    $post->setAttribute('modifiable', $userId == $post->user_id);
                 }
-            }
+
 
             return response()->json($paginatedPosts, 200);
         } catch (\Exception $e) {
@@ -281,6 +282,7 @@ class CommunityCookbookControlller extends Controller
             }
 
             $comment->comment = $newComment;
+            $comment->updated_at = now();
             $comment->save();
 
             return response()->json([
@@ -315,7 +317,11 @@ class CommunityCookbookControlller extends Controller
         try {
             $post = CommunityCookbook::where([
                 'id' => $postId,
-            ])->with('user:id,firstname,lastname,email,image_path')->first();
+            ])->with('user:id,firstname,lastname,email,image_path')
+            ->withExists(['likes as isLiked' => function($query) use ($userId){
+                    $query->where('user_id', $userId);
+                }] )
+            ->first();
 
             if(!$post){
                 return response()->json([
@@ -323,9 +329,9 @@ class CommunityCookbookControlller extends Controller
                 ], 404);
             }
 
-            if($userId){
-                $post->setAttribute('modifiable', $userId === $post->user_id);
-            }
+
+            $post->setAttribute('modifiable', $userId === $post->user_id);
+
 
             return response()->json($post, 200);
         } catch (\Exception $e) {

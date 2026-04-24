@@ -1,9 +1,10 @@
 import { Navigate, Outlet } from "react-router-dom";
+import {useSelector} from 'react-redux';
 
 export default function PublicRoute(){
-    const isGuest = JSON.parse(sessionStorage.getItem("guest"));
-
-    return isGuest ? <Outlet/> : <Navigate to={"/"}/>
+    
+    const {data: userData} = useSelector((state) => state.user); 
+    return !userData ? <Outlet/> : <Navigate to={"/"}/>
     
     
 }

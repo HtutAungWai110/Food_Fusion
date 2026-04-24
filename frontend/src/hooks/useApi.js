@@ -1,260 +1,131 @@
-
-
+import apiClient from '../lib/client';
 
 async function register(formData) {
-    
-    const res = await fetch(`/api/auth/register`, {
-    method: "POST",
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(formData)
-
-    })
-
-    if(!res.ok){
-    const errorData = await res.json();
-    if (errorData.errors && errorData.errors.email) {
-        throw new Error(errorData.errors.email[0]);
-    } else if (errorData.errors && errorData.errors.password) {
-        throw new Error(errorData.errors.password[0]);
-    } else if (errorData.errors && errorData.errors.firstname) {
-        throw new Error(errorData.errors.firstname[0]);
-    } else if (errorData.errors && errorData.errors.lastname) {
-        throw new Error(errorData.errors.lastname[0]);
-    }
-    }
-
-    
-    
-
-    const data = await res.json();
-    return data;
-     
-
-}
-
-async function login(formData){
-    const res = await fetch('/api/auth/login', {
-        method: "POST",
-        headers: {
-            'Content-Type': 'applicaton/json'
-        },
-        body: JSON.stringify(formData)
-    })
-
-    if(!res.ok){
-    const errorData = await res.json();
-    
-        throw new Error(errorData.message);
-    
-    }
-
-
-    const data = await res.json();
-    return data;
-}
-
-async function proxyFetch(url, options = {}) {
-
-    const headers = { ...options.headers };
-    
-    // Only set Content-Type to application/json if it's not FormData and not already set
-    if (!(options.body instanceof FormData) && !headers['Content-Type']) {
-        headers['Content-Type'] = 'application/json';
-    }
-
-    //Set default headers and credentials
-    const defaultOptions = {
-        credentials: 'include',
-        ...options,
-        headers
-    };
-
-    //Attempt the actual request first
-    let response = await fetch(url, defaultOptions);
-
-    //If unauthorized, try to refresh once
-    if (response.status === 401) {
-        const refreshRes = await fetch('/api/auth/refresh-token', {
-            method: "POST",
-            credentials: 'include',
-        });
-
-        if (refreshRes.ok) {
-            // Refresh worked, retry the original request
-         
-            response = await fetch(url, defaultOptions);
-        } else {
-            // Both tokens failed: Wipe session and throw
-            sessionStorage.setItem("guest", JSON.stringify(true));
-            const error = await refreshRes.json();
-            window.location.href = '/session-expired';
-            throw new Error(error.message || 'Session expired');
+    try {
+        const res = await apiClient.post('/auth/register', formData);
+        return res.data;
+    } catch (error) {
+        if (error.response && error.response.data.errors) {
+            const errorData = error.response.data;
+            if (errorData.errors.email) {
+                throw new Error(errorData.errors.email[0]);
+            } else if (errorData.errors.password) {
+                throw new Error(errorData.errors.password[0]);
+            } else if (errorData.errors.firstname) {
+                throw new Error(errorData.errors.firstname[0]);
+            } else if (errorData.errors.lastname) {
+                throw new Error(errorData.errors.lastname[0]);
+            }
         }
+        throw error;
     }
-
-    return response;
 }
 
-async function tryProxyFetch(url, options = {}) {
-
-    const headers = { ...options.headers };
-    
-    // Only set Content-Type to application/json if it's not FormData and not already set
-    if (!(options.body instanceof FormData) && !headers['Content-Type']) {
-        headers['Content-Type'] = 'application/json';
-    }
-
-    //Set default headers and credentials
-    const defaultOptions = {
-        credentials: 'include',
-        ...options,
-        headers
-    };
-
-    //Attempt the actual request first
-    let response = await fetch(url, defaultOptions);
-
-    //If unauthorized, try to refresh once
-    if (response.status === 401) {
-        const refreshRes = await fetch('/api/auth/refresh-token', {
-            method: "POST",
-            credentials: 'include',
-        });
-
-        if (refreshRes.ok) {
-            // Refresh worked, retry the original request
-         
-            response = await fetch(url, defaultOptions);
-        } else {
-            // Both tokens failed: Wipe session and throw
-            sessionStorage.setItem("guest", JSON.stringify(true));
-            const error = await refreshRes.json();
-            throw new Error(error.message || 'Session expired');
+async function login(formData) {
+    try {
+        const res = await apiClient.post('/auth/login', formData);
+        return res.data;
+    } catch (error) {
+        if (error.response && error.response.data.message) {
+            throw new Error(error.response.data.message);
         }
+        throw error;
     }
-
-    return response;
 }
-
-
 
 async function uploadPost(formData) {
-    const res = await proxyFetch(`/api/community_cookbook/uploadPost`, {
-        method: "POST",
-        body: formData,
-    })
-
-    if(!res.ok){
-        const error = await res.json();
-        throw new Error(`Status: ${res.status}, ${error.message}`)
+    try {
+        const res = await apiClient.post('/community_cookbook/uploadPost', formData);
+        return res.data;
+    } catch (error) {
+        if (error.response) {
+            throw new Error(`Status: ${error.response.status}, ${error.response.data.message}`);
+        }
+        throw error;
     }
-
-    const data = await res.json();
-    return data;
 }
 
-async function getRecipes(cuisine, difficulty, page, search){
-    const res = await fetch(`/api/recipes?cuisine=${encodeURI(cuisine)}&difficulty=${encodeURI(difficulty)}&page=${page}&title=${search}`, {
-        method: "GET"
-    });
-
-    if(!res.ok){
-        const error = await res.json();
-        throw new Error(`${error.message}`)
+async function getRecipes(cuisine, difficulty, page, search) {
+    try {
+        const res = await apiClient.get('/recipes', {
+            params: {
+                cuisine,
+                difficulty,
+                page,
+                title: search
+            }
+        });
+        return res.data;
+    } catch (error) {
+        if (error.response) {
+            throw new Error(`${error.response.data.message}`);
+        }
+        throw error;
     }
-
-    const data = await res.json();
-    return data;
 }
 
-async function  getRecipe(id) {
-    const res = await fetch(`/api/recipes/search?id=${encodeURI(id)}`, {
-        method: "GET"
-    });
-
-    if(!res.ok){
-        const error = await res.json();
-        throw new Error(`Status: ${res.status}, ${error.message}`)
+async function getRecipe(id) {
+    try {
+        const res = await apiClient.get('/recipes/search', {
+            params: { id }
+        });
+        return res.data;
+    } catch (error) {
+        if (error.response) {
+            throw new Error(`Status: ${error.response.status}, ${error.response.data.message}`);
+        }
+        throw error;
     }
-
-    const data = await res.json();
-    return data;
 }
-
 
 async function likeRecipe(postId) {
-    const res = await proxyFetch(`/api/recipes/likeRecipe`, {
-        method: "POST",
-        body: JSON.stringify({id: postId})
-    })
-
-    if(!res.ok){
-        const error = await res.json();
-        throw new Error(`Status: ${res.status}, ${error.message}`)
+    try {
+        const res = await apiClient.post('/recipes/likeRecipe', { id: postId });
+        return res.data;
+    } catch (error) {
+        if (error.response) {
+            throw new Error(`Status: ${error.response.status}, ${error.response.data.message}`);
+        }
+        throw error;
     }
-
-    const data = await res.json();
-    return data;
 }
 
 async function likePost(postId) {
-    const res = await proxyFetch(`/api/community_cookbook/likePost`, {
-        method: "POST",
-        body: JSON.stringify({id: postId})
-    })
-
-    if(!res.ok){
-        const error = await res.json();
-        throw new Error(`Status: ${res.status}, ${error.message}`)
+    try {
+        const res = await apiClient.post('/community_cookbook/likePost', { id: postId });
+        return res.data;
+    } catch (error) {
+        if (error.response) {
+            throw new Error(`Status: ${error.response.status}, ${error.response.data.message}`);
+        }
+        throw error;
     }
-
-    const data = await res.json();
-    return data;
 }
 
 async function postComment(newComment, postId) {
-    const res = await proxyFetch(`/api/community_cookbook/postComment`, {
-        method: "POST",
-        body: JSON.stringify({id: postId, comment: newComment})
-    })
-
-    if(!res.ok){
-        const error = await res.json();
-        throw new Error(`Status: ${res.status}, ${error.message}`)
+    try {
+        const res = await apiClient.post('/community_cookbook/postComment', { id: postId, comment: newComment });
+        return res.data;
+    } catch (error) {
+        if (error.response) {
+            throw new Error(`Status: ${error.response.status}, ${error.response.data.message}`);
+        }
+        throw error;
     }
-
-    const data = await res.json();
-    return data;
 }
 
 async function getPosts(page) {
-     
-    const isGuest = JSON.parse(sessionStorage.getItem("guest"));
-    let res;
-    if (isGuest){
-        res = await fetch(`/api/community_cookbook/getPosts?page=${page}`, {
-            method: "GET"
-        })   
-    } else {
-        res = await proxyFetch(`/api/community_cookbook/getPosts?page=${page}`, {
-        method: "GET",
-        credentials: 'include'
-        })   
+    try {
+        const res = await apiClient.get('/community_cookbook/getPosts', {
+            params: { page }
+        });
+        return res.data;
+    } catch (error) {
+        if (error.response) {
+            throw new Error(`Status: ${error.response.status}, ${error.response.data.message}`);
+        }
+        throw error;
     }
-
-    
-
-    if(!res.ok){
-        const error = await res.json();
-        throw new Error(`Status: ${res.status}, ${error.message}`) 
-    }
-
-    const data = await res.json();
-    return data;
 }
 
-
-
-export {register, login, proxyFetch, getRecipes, getRecipe, likeRecipe, likePost, getPosts, postComment, uploadPost, tryProxyFetch};
+export { register, login, getRecipes, getRecipe, likeRecipe, likePost, getPosts, postComment, uploadPost };

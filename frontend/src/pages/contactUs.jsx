@@ -3,7 +3,6 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import {useSelector} from "react-redux"
-import {proxyFetch} from "../hooks/useApi";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react";
 import {
@@ -19,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import MessageBox from "../components/messageBox";
 import { Mail, MessageSquare, User } from "lucide-react";
+import apiClient from "../lib/client";
 
 
 export default function ContactUs() {
@@ -35,33 +35,12 @@ export default function ContactUs() {
 
   const feedbackMutation = useMutation({
     mutationFn: async (formData) => {
-      let res;
-      if (userData) {
-        res = await proxyFetch(`/api/feedback/submit`, {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData)
-      })
-      } else {
-        res = await fetch(`/api/feedback/submit`, {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData)
-        })
+      try {
+        const res = await apiClient.post(`/feedback/submit`, formData);
+        return res.data;
+      } catch (error) {
+        throw new Error(error.response?.data?.message || "Failed to submit feedback");
       }
-       
-
-    if(!res.ok){
-        const error = await res.json();
-        throw new Error(error.message || "Failed to submit feedback");
-    }
-
-    const data = await res.json();
-    return data;
     },
     onSuccess: (data) => {
       setMessage(<MessageBox status="success" message={data.message || "Thank you for your feedback!"} />);

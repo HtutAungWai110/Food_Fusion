@@ -12,9 +12,10 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:8000',
         changeOrigin: true,
-        // Optional: remove this line if your Laravel routes 
+        cookieDomainRewrite: 'localhost:5173',
+        // Optional: remove this line if your Laravel routes
         // ALREADY start with /api (e.g., routes/api.php)
-        rewrite: (path) => path.replace(/^\/api/, ''), 
+        rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
   },

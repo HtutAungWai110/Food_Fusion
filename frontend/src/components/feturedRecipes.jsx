@@ -8,16 +8,19 @@ import {
 import { useQuery } from "@tanstack/react-query"
 
 import RecipeCard from "./recipeCard"
+import apiClient from "../lib/client"
 
 export default function FeturedRecipes(){
 
     const {data} = useQuery({
         queryKey: ["popular_recipes"],
         queryFn: async () => {
-            const res = await fetch("/api/recipes/popularRecipes");
-
-            const data = await res.json();
-            return data;
+            try {
+                const res = await apiClient.get("/recipes/popularRecipes");
+                return res.data;
+            } catch (error) {
+                throw new Error(error.response?.data?.message || error.message);
+            }
         },
         staleTime: Infinity
     })

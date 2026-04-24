@@ -36,6 +36,11 @@ class CommunityCookbook extends Model
         return $this->hasMany(CommunityCookbookComment::class, 'post_id');
     }
 
+    public function likes(): HasMany
+    {
+        return $this->hasMany(CommunityCookbookLikes::class, 'post_id');
+    }
+
 
 
     protected $appends = ["image_url"];

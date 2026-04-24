@@ -21,6 +21,7 @@ import {
 import MessageBox from "../components/messageBox";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react";
+import apiClient from "../lib/client";
 
 
 
@@ -36,21 +37,12 @@ export default function ResetPassword(){
     const {data, loading, error} = useQuery({
         queryKey: [`reset_session ${token}`],
         queryFn: async () => {
-            const res = await fetch(`/api/auth/check-reset-session?token=${token}&email=${email}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                }
-
-            })
-
-            if(!res.ok){
-                const error = await res.json();
-                throw new Error(error.message)
+            try {
+                const res = await apiClient.post(`/auth/check-reset-session?token=${token}&email=${email}`);
+                return res.data;
+            } catch (error) {
+                throw new Error(error.response?.data?.message || error.message);
             }
-
-            const data = await res.json();
-            return data;
         },
         retry: false,
         staleTime: 5,
@@ -65,21 +57,12 @@ export default function ResetPassword(){
 
     const resetMutation = useMutation({
         mutationFn: async (password) => {
-            const res = await fetch(`/api/auth/reset-password?token=${token}&email=${email}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({password})
-            })
-
-            if(!res.ok){
-                const error = await res.json();
-                throw new Error(error.message)
+            try {
+                const res = await apiClient.post(`/auth/reset-password?token=${token}&email=${email}`, { password });
+                return res.data;
+            } catch (error) {
+                throw new Error(error.response?.data?.message || error.message);
             }
-
-            const data = await res.json();
-            return data
         },
         mutationKey: [`reset${token}`],
         onSuccess: (data) => {

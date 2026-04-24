@@ -14,11 +14,7 @@ class UserController extends Controller
 
  public function userInfo(Request $req){
         $accessToken = $req->cookie('access_token');
-        if(!$accessToken){
-            return response()->json([
-                'message' => 'Unauthorized - No tokens found',
-            ], 401);
-        }
+        if($accessToken){
 
         $payload = auth('api')->setToken($accessToken)->getPayload();
         $userId = $payload->get('sub');
@@ -27,6 +23,8 @@ class UserController extends Controller
         return response()->json([
             'user' => ['firstname'=>$user->firstname, 'lastname'=>$user->lastname, 'email'=>$user->email, 'image_url' => $user->getImageUrlAttribute()]
         ], 201);
+        }
+        return response()->json(null, 201);
     }
     public function  uploadAvatar(Request $req){
         $userId = $req->attributes->get('user_id');
@@ -69,7 +67,15 @@ class UserController extends Controller
 
         try {
             $posts = CommunityCookbook::where('user_id', $userId)->with('user:id,firstname,lastname,email,image_path')
+            ->withExists(['likes as isLiked' => function($query) use ($userId){
+                    $query->where('user_id', $userId);
+                }] )
             ->orderBy('created_at', 'desc')->paginate(10);
+
+            foreach ($posts as $post){
+                    $post->setAttribute('modifiable', $userId == $post->user_id);
+            }
+
 
             return response()->json($posts, 200);
 

@@ -22,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         $middleware->append(HandleCors::class);
         $middleware->alias([
+            'tokenCheck' => \App\Http\Middleware\TokenCheckMiddleware::class,
             'auth' => \App\Http\Middleware\AuthMiddleware::class,
         ]);
     })

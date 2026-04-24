@@ -1,4 +1,4 @@
-import { likeRecipe, proxyFetch } from "../hooks/useApi";
+import { likeRecipe } from "../hooks/useApi";
 import { useMutation } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton"
@@ -8,6 +8,7 @@ import { useQueryClient } from "@tanstack/react-query";
 
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react"
+import apiClient from "../lib/client";
 
 
 export default function RecipeLikeBtn({id, setMessage}){
@@ -17,17 +18,14 @@ export default function RecipeLikeBtn({id, setMessage}){
     const queryClient = useQueryClient();
     const {data, isLoading,} = useQuery({
         queryFn: async () => {
-            const res = await proxyFetch(`/api/recipes/liked?id=${id}`, {
-                method: "GET"
-            })
-
-            if(!res.ok){
-                const error = await res.json();
-                throw new Error(error.message);
+            try {
+                const res = await apiClient.get(`/recipes/liked`, {
+                    params: { id }
+                });
+                return res.data;
+            } catch (error) {
+                throw new Error(error.response?.data?.message || error.message);
             }
-
-            const data = await res.json();
-            return data;
 
         },
         queryKey: ["liked", id],

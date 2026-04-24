@@ -5,7 +5,6 @@ import Cropper from 'react-easy-crop';
 import { getCroppedImg } from "../lib/croppImage";
 import { Card, CardContent } from "@/components/ui/card";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { proxyFetch } from "../hooks/useApi";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDispatch } from "react-redux";
 import { getUser } from "../states/UserState";
@@ -13,6 +12,7 @@ import PostCard from "../components/postCard";
 import MessageBox from "../components/MessageBox";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react";
+import apiClient from "../lib/client";
 
 
 export default function Profile() {
@@ -23,12 +23,12 @@ export default function Profile() {
   const { data: userPosts, isLoading: postsLoading } = useQuery({
     queryKey: ["userPosts", userData?.id],
     queryFn: async () => {
-      const response = await proxyFetch("/api/user/getPosts", {
-        method: "GET",
-      });
-
-      const data = await response.json()
-      return data
+      try {
+        const response = await apiClient.get("/user/getPosts");
+        return response.data;
+      } catch (error) {
+        throw new Error(error.response?.data?.message || error.message);
+      }
     },
     staleTime: 15 * 60 * 1000,
     gcTime: 5 * 60 * 1000,
@@ -60,18 +60,14 @@ export default function Profile() {
   const uploadAvatarMutation = useMutation({
     mutationFn: async () => {
         const base64Image = await getCroppedImg(image, croppedAreaPixels);
-        const res = await proxyFetch('/api/user/uploadAvatar', {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
+        try {
+            const res = await apiClient.post('/user/uploadAvatar', {
                 base64Image
-            })
-        })
-
-        const data = await res.json();
-        return data;
+            });
+            return res.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || error.message);
+        }
     },
     mutationKey: ["avatar"],
     onSuccess: () => {

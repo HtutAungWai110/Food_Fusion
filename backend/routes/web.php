@@ -28,9 +28,9 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::prefix('user')->group(function () {
-    Route::get('/info', [UserController::class, 'userInfo'])->middleware('auth');
-    Route::post('/uploadAvatar', [UserController::class, 'uploadAvatar'])->middleware('auth');
-    Route::get('/getPosts', [UserController::class, 'getUserPosts'])->middleware('auth');
+    Route::get('/info', [UserController::class, 'userInfo'])->middleware('tokenCheck');
+    Route::post('/uploadAvatar', [UserController::class, 'uploadAvatar'])->middleware(['tokenCheck', 'auth']);
+    Route::get('/getPosts', [UserController::class, 'getUserPosts'])->middleware(['tokenCheck', 'auth']);
 
 });
 
@@ -38,20 +38,20 @@ Route::prefix('recipes')->group(function () {
     Route::get('/', [RecipesController::class, 'getRecipes']);
     Route::get('/search', [RecipesController::class, 'search']);
     Route::get("/popularRecipes", [RecipesController::class, "getPopularRecipes"]);
-    Route::post("/likeRecipe", [RecipesController::class, "handleLike"])->middleware('auth');
-    Route::get("/liked", [RecipesController::class, "checkLiked"])->middleware("auth");
+    Route::post("/likeRecipe", [RecipesController::class, "handleLike"])->middleware(['tokenCheck', 'auth']);
+    Route::get("/liked", [RecipesController::class, "checkLiked"])->middleware(['tokenCheck', 'auth']);
 });
 
 Route::prefix('community_cookbook')->group(function () {
-    Route::get('/getPosts', [CommunityCookbookControlller::class, "getPosts"]);
-    Route::get('/getPost', [CommunityCookbookControlller::class, "getPost"]);
-    Route::post('/likePost', [CommunityCookbookControlller::class, "likePost"])->middleware('auth');
-    Route::get('/isLiked', [CommunityCookbookControlller::class, "isLiked"])->middleware('auth');
-    Route::post('/postComment', [CommunityCookbookControlller::class, "postComment"])->middleware('auth');
-    Route::get('/getComments', [CommunityCookbookControlller::class, "getComments"]);
-    Route::delete('/deleteComment', [CommunityCookbookControlller::class, "deleteComment"])->middleware('auth');
-    Route::post('/uploadPost', [CommunityCookbookControlller::class, "createPost"])->middleware('auth');
-    Route::put('/updateComment', [CommunityCookbookControlller::class, "updateComment"])->middleware('auth');
+    Route::get('/getPosts', [CommunityCookbookControlller::class, "getPosts"])->middleware('tokenCheck');
+    Route::get('/getPost', [CommunityCookbookControlller::class, "getPost"])->middleware('tokenCheck');
+    Route::post('/likePost', [CommunityCookbookControlller::class, "likePost"])->middleware(['tokenCheck', 'auth']);
+    Route::get('/isLiked', [CommunityCookbookControlller::class, "isLiked"])->middleware(['tokenCheck', 'auth']);
+    Route::post('/postComment', [CommunityCookbookControlller::class, "postComment"])->middleware(['tokenCheck', 'auth']);
+    Route::get('/getComments', [CommunityCookbookControlller::class, "getComments"])->middleware('tokenCheck');
+    Route::delete('/deleteComment', [CommunityCookbookControlller::class, "deleteComment"])->middleware(['tokenCheck', 'auth']);
+    Route::post('/uploadPost', [CommunityCookbookControlller::class, "createPost"])->middleware(['tokenCheck', 'auth']);
+    Route::put('/updateComment', [CommunityCookbookControlller::class, "updateComment"])->middleware(['tokenCheck', 'auth']);
 
 });
 

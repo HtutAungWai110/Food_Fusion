@@ -9,10 +9,10 @@ import CommentInput from "./commentInput"
 import CommentWrapper from "./commentsWrapper"
 import { useSelector } from "react-redux"
 import {Skeleton} from "@/components/ui/skeleton"
-import { proxyFetch } from "../hooks/useApi"
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "motion/react"
 import { useQuery } from "@tanstack/react-query"
+import apiClient from "../lib/client"
 
 function PostCard({ initialData, setMessage }) {
 
@@ -20,27 +20,17 @@ function PostCard({ initialData, setMessage }) {
     queryKey: ["post", initialData.id],
     initialData: initialData,
     queryFn: async () => {
-        const isGuest = JSON.parse(sessionStorage.getItem("guest"));
-        let res;
-        if(isGuest){
-          res = await fetch(`/api/community_cookbook/getPost?postId=${initialData.id}`, {
-            method: "GET"
-          })
-        } else {
-          res = await proxyFetch(`/api/community_cookbook/getPost?postId=${initialData.id}`, {
-            method: "GET"
-          })
+        try {
+            const res = await apiClient.get(`/community_cookbook/getPost`, {
+                params: { postId: initialData.id }
+            });
+            return res.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || error.message);
         }
-
-        if(!res.ok){
-          const error = await res.json();
-          throw new Error(error.message)
-        }
-        const data = await res.json();
-        return data
   }
   })
-  const { user, post_description, image_url, likes, created_at, id, modifiable } = post;
+  const { user, post_description, image_url, likes, created_at, id, modifiable, isLiked } = post;
   const [showingComments, setShowingComments] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
   const [userImageLoading, setUserImageLoading] = useState(true);
@@ -144,7 +134,7 @@ function PostCard({ initialData, setMessage }) {
 
               { userData ? 
 
-             <PostLikeBtn id={id} setMessage={setMessage} likes={likes}>
+             <PostLikeBtn id={id} setMessage={setMessage} isLiked={isLiked}>
               <span className="text-xs font-semibold">{likes}</span>
              </PostLikeBtn >
               

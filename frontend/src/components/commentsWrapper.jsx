@@ -1,30 +1,20 @@
 import { useQuery } from "@tanstack/react-query";
 import CommentTemplate from "./commentTemplate";
-import { proxyFetch } from "../hooks/useApi";
+import apiClient from "../lib/client";
+
 
 export default function CommentWrapper({postId, setMessage}){
-    const isGuest = JSON.parse(sessionStorage.getItem("guest"))
 
     const {data: comments, isLoading, error} = useQuery({
         queryFn: async () => {
-            let res;
-            if (isGuest){
-                res = await fetch(`/api/community_cookbook/getComments?id=${postId}`, {
-                    method: "GET",
-                    credentials: "include"
+            try {
+                const res = await apiClient.get(`/community_cookbook/getComments`, {
+                    params: { id: postId }
                 });
-            } else {
-                res = await proxyFetch(`/api/community_cookbook/getComments?id=${postId}`, {
-                    method: "GET",
-                });
+                return res.data;
+            } catch (error) {
+                throw new Error(error.response?.data?.message || error.message);
             }
-            if(!res.ok) {
-                const error = await res.json();
-                throw new Error(error.message);
-            };
-
-            const data = await res.json();
-            return data;
         },
         queryKey: ["comments", postId],
         staleTime: 3 * 60 * 1000,
