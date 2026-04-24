@@ -28,7 +28,8 @@ function PostCard({ initialData, setMessage }) {
         } catch (error) {
             throw new Error(error.response?.data?.message || error.message);
         }
-  }
+    },
+    refetchOnMount: false
   })
   const { user, post_description, image_url, likes, created_at, id, modifiable, isLiked } = post;
   const [showingComments, setShowingComments] = useState(false);
