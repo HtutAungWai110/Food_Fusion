@@ -92,6 +92,7 @@ async function likeRecipe(postId) {
 
 async function likePost(postId) {
     try {
+       
         const res = await apiClient.post('/community_cookbook/likePost', { id: postId });
         return res.data;
     } catch (error) {

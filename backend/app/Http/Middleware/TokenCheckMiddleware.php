@@ -16,7 +16,7 @@ class TokenCheckMiddleware
             $accessToken = $request->cookie('access_token');
 
             if(!$accessToken){
-                $refreshToken = $request->cookie('access_token');
+                $refreshToken = $request->cookie('refresh_token');
 
                 if($refreshToken){
 
