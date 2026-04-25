@@ -27,6 +27,7 @@ export default function CommunityCookbook() {
         queryKey: ["posts", page],
         queryFn: () =>  getPosts(page),
         staleTime: 5 * 60 * 1000,
+        refetchOnMount: true
         
     })
     useEffect(() => {

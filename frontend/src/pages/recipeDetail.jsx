@@ -25,7 +25,7 @@ import { useSelector } from "react-redux"
 import MessagePopupBottom from "../components/messagePopupBottom"
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 
 export default function RecipeDetail() {
@@ -37,11 +37,14 @@ export default function RecipeDetail() {
         queryKey: ["recipe", id],
         queryFn: () => getRecipe(id),
         enabled: !!id,
-        staleTime: 15,
-        gcTime: 10,
+        staleTime: 5 * 60 * 1000,
     })
 
     const {data: userData} = useSelector(state => state.user);
+
+    useEffect(() => {
+        console.log(data)
+    }, [data])
 
     const onLike = () => {
         setMessage(
@@ -91,6 +94,7 @@ export default function RecipeDetail() {
             detailed_instruction,
             image_url,
             created_at,
+            isLiked
         } = data;
 
         const date = new Date(created_at).toLocaleDateString(undefined, {
@@ -210,17 +214,22 @@ export default function RecipeDetail() {
                                             </button> */}
                                             {userData ? 
 
-                                            <RecipeLikeBtn id={id} setMessage={setMessage}/>
+                                            <RecipeLikeBtn 
+                                            id={id} 
+                                            setMessage={setMessage}
+                                            isLiked={isLiked}
+                                            likes={likes}
+                                            />
                                             :
-                                            <button onClick={onLike} className="cursor-pointer active:scale-110">
+                                            <button onClick={onLike} className="cursor-pointer active:scale-110 flex flex-col items-center">
                                                 <ThumbsUp className={`w-5 h-5 text-rose-500 `} />
-                                            
+                                                <span className="text-sm font-semibold">{likes} Likes</span>
                                             </button>
                                             
         
                                             
                                             }
-                                            <span className="text-sm font-semibold">{likes} Likes</span>
+                                            
                                             <span className="text-[10px] uppercase text-muted-foreground font-bold tracking-wider">Community</span>
                                         </div>
                                         <div className="bg-muted/50 p-4 rounded-2xl flex flex-col items-center justify-center text-center space-y-1">

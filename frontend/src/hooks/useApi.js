@@ -80,6 +80,7 @@ async function getRecipe(id) {
 
 async function likeRecipe(postId) {
     try {
+        
         const res = await apiClient.post('/recipes/likeRecipe', { id: postId });
         return res.data;
     } catch (error) {

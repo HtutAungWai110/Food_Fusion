@@ -36,7 +36,7 @@ Route::prefix('user')->group(function () {
 
 Route::prefix('recipes')->group(function () {
     Route::get('/', [RecipesController::class, 'getRecipes']);
-    Route::get('/search', [RecipesController::class, 'search']);
+    Route::get('/search', [RecipesController::class, 'search'])->middleware('tokenCheck');
     Route::get("/popularRecipes", [RecipesController::class, "getPopularRecipes"]);
     Route::post("/likeRecipe", [RecipesController::class, "handleLike"])->middleware(['tokenCheck', 'auth']);
     Route::get("/liked", [RecipesController::class, "checkLiked"])->middleware(['tokenCheck', 'auth']);
