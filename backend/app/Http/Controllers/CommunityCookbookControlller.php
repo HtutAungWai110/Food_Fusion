@@ -343,6 +343,54 @@ class CommunityCookbookControlller extends Controller
 
     }
 
+    public function deletePost(Request $req){
+        $userId = $req->attributes->get("user_id");
+        $postId = $req->query("postId") | $req->input("postId");
+
+        $validator = Validator::make($req->all(), [
+            'userId' => 'string',
+            'postId' => 'string',
+        ]);
+
+
+        if ($validator->fails()) {
+        return response()->json([
+            'message' => 'Validation failed',
+            'errors'  => $validator->errors()
+        ], 422);
+        }
+
+        // return response()->json([
+        //     "message" => "post deleted",
+        //     "data" => ["userId" => $userId, "postId" => $postId]
+        // ], 200);
+
+        try {
+            $post = CommunityCookbook::where([
+                "id" => $postId,
+                "user_id" => $userId
+            ])->first();
+
+            if(!$post){
+                return response()->json([
+                    "message" => "Post not found!"
+                ], 404);
+            }
+
+            $post->delete();
+
+            return response()->json([
+                "message" => "post deleted",
+
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 500);
+        }
+
+    }
+
     private function getUserIdFromCookie(Request $req){
         $accessToken = $req->cookie('access_token');
         if ($accessToken) {

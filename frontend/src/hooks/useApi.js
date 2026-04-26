@@ -129,4 +129,18 @@ async function getPosts(page) {
     }
 }
 
-export { register, login, getRecipes, getRecipe, likeRecipe, likePost, getPosts, postComment, uploadPost };
+async function deletePost(id){
+     try {
+        const res = await apiClient.delete('/community_cookbook/deletePost', {
+            params: { postId: id }
+        });
+        return res.data;
+    } catch (error) {
+        if (error.response) {
+            throw new Error(`Status: ${error.response.status}, ${error.response.data.message}`);
+        }
+        throw error;
+    }
+}
+
+export { register, login, getRecipes, getRecipe, likeRecipe, likePost, getPosts, postComment, uploadPost, deletePost };

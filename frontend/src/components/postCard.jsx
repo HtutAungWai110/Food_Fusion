@@ -7,6 +7,7 @@ import SignupCard from "./SignupCard"
 import { Link } from "react-router-dom"
 import CommentInput from "./commentInput"
 import CommentWrapper from "./commentsWrapper"
+import PostModifyBtn from "./postModifyBtn"
 import { useSelector } from "react-redux"
 import {Skeleton} from "@/components/ui/skeleton"
 // eslint-disable-next-line no-unused-vars
@@ -99,10 +100,7 @@ function PostCard({ initialData, setMessage }) {
 
           {
             modifiable &&
-            <Button
-            variant="ghost"
-            ><MoreHorizontal/>
-            </Button>
+            <PostModifyBtn id={id} setMessage={setMessage}/>
           }
         </CardHeader>
 

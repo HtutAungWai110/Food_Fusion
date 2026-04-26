@@ -52,6 +52,7 @@ Route::prefix('community_cookbook')->group(function () {
     Route::delete('/deleteComment', [CommunityCookbookControlller::class, "deleteComment"])->middleware(['tokenCheck', 'auth']);
     Route::post('/uploadPost', [CommunityCookbookControlller::class, "createPost"])->middleware(['tokenCheck', 'auth']);
     Route::put('/updateComment', [CommunityCookbookControlller::class, "updateComment"])->middleware(['tokenCheck', 'auth']);
+    Route::delete('/deletePost', [CommunityCookbookControlller::class, "deletePost"])->middleware(['tokenCheck', 'auth']);
 
 });
 
