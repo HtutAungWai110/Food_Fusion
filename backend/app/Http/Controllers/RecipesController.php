@@ -41,10 +41,17 @@ class RecipesController extends Controller
     }
 
     public function search(Request $req){
+        $userId = $this->getUserIdFromCookie($req);
         $id = $req->query('id');
 
         try {
-            $recipe = Recipe::find($id);
+            $recipe = Recipe::where([
+                'id' => $id
+            ])
+            ->withExists(['likes as isLiked' => function($query) use ($userId){
+                    $query->where('user_id', $userId);
+                }] )
+            ->first();
             if(!$recipe){
                 return response()->json([
                     "message" => "Recipe not found"
@@ -149,6 +156,18 @@ class RecipesController extends Controller
         }
 
     }
+
+    private function getUserIdFromCookie(Request $req){
+        $accessToken = $req->cookie('access_token');
+        if ($accessToken) {
+                $payload = auth('api')->setToken($accessToken)->getPayload();
+                $userId = $payload->get('sub');
+                return $userId;
+        }
+
+        return null;
+    }
+
 
 
 }
