@@ -9,6 +9,7 @@ import CommentInput from "./commentInput"
 import CommentWrapper from "./commentsWrapper"
 import { useSelector } from "react-redux"
 import {Skeleton} from "@/components/ui/skeleton"
+import PostModifyBtn from "./postModifyBtn"
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "motion/react"
 import { useQuery } from "@tanstack/react-query"
@@ -98,10 +99,7 @@ function PostCard({ initialData, setMessage }) {
 
           {
             modifiable &&
-            <Button
-            variant="ghost"
-            ><MoreHorizontal/>
-            </Button>
+            <PostModifyBtn id={id}/>
           }
         </CardHeader>
 

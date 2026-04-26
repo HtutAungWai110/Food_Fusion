@@ -58,14 +58,14 @@ class AuthController extends Controller
 
             return response()->json([
                 'message' => "Your account is temporarily locked. Try again after 3 minutes."
-            ], 401);
+            ], 403);
         }
 
         $passwordValid = Hash::check($request->input('password'), $user->password);
         if(!$user){
             return response()->json([
                 'message' => 'Invalid email or password',
-            ], 401);
+            ], 400);
         }
 
         if(!$passwordValid){
@@ -73,7 +73,7 @@ class AuthController extends Controller
             $user->save();
             return response()->json([
                 'message' => 'Invalid email or password',
-            ], 401);
+            ], 400);
 
 
         }
@@ -96,7 +96,7 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'User login successfully',
                 'user'    => $user,
-            ], 201)->withCookie($accessCookie)->withCookie($refreshCookie);
+            ], 202)->withCookie($accessCookie)->withCookie($refreshCookie);
 
 
         }
@@ -166,7 +166,7 @@ class AuthController extends Controller
         if (!$refreshToken) {
             return response()->json([
                 'message' => 'Unauthorized - No tokens found',
-            ], 401);
+            ], 400);
         }
 
         try {
@@ -178,7 +178,7 @@ class AuthController extends Controller
             if (!$user) {
                 return response()->json([
                     'message' => 'Unauthorized - User not found',
-                ], 401);
+                ], 400);
             }
 
             // Generate new access token
@@ -195,7 +195,7 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Unauthorized - Invalid refresh token',
-            ], 401);
+            ], 400);
         }
     }
 
@@ -259,7 +259,7 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => "A password reset link has been sent.",
-        ], 200);
+        ], 201);
     }
 
     /**

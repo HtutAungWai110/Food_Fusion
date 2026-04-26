@@ -162,9 +162,7 @@ export default function Profile() {
                   </div>
                 </div>
               </div>
-              <div className="absolute -bottom-2 -right-2 bg-green-500 border-4 border-background w-8 h-8 rounded-full flex items-center justify-center shadow-lg z-20" title="Online">
-                <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
-              </div>
+          
             </div>
 
             {/* User Info on the Right */}

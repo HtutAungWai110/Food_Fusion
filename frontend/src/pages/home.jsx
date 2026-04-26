@@ -18,12 +18,12 @@ export default function Home() {
     }
     
     <motion.div animate={{ opacity: [0, 1], translateY: [-30, 10, 0], transition: {duration: 1.2} }}> 
-    <div className="flex flex-col gap-12 py-12 max-w-7xl mx-auto px-4">
-      <section className="text-center space-y-6 max-w-3xl mx-auto">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-orange-500">
+    <div className="flex flex-col gap-12 w-full">
+      <section className="text-center space-y-6 banner-background sm:h-125 h-auto p-5 flex flex-col justify-center items-center">
+        <h1 className="text-2xl md:text-5xl font-bold tracking-tight text-orange-500">
           Welcome to FoodFusion
         </h1>
-        <p className="text-xl text-muted-foreground leading-relaxed">
+        <p className="text-background sm:text-[1.2em] text-[0.8em] leading-relaxed sm:w-[50%] w-[90%] ">
           At FoodFusion, we are dedicated to promoting home cooking and culinary creativity among food enthusiasts. 
           Our platform serves as a central hub for sharing recipes, culinary tips, and fostering a vibrant 
           food community where everyone can discover and share their passion for cooking.

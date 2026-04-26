@@ -141,4 +141,11 @@
   }
 
   
+
+  
+}
+
+.banner-background{
+  background: linear-gradient(rgb(0,0,0,0.75), rgb(0,0,0,0.75), rgb(0,0,0,0.75)), url("./public/food-background.jpg");
+  background-size: cover;
 }
