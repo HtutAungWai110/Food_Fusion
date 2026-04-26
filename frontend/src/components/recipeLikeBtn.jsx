@@ -44,12 +44,11 @@ export default function RecipeLikeBtn({id, likes, isLiked, setMessage}){
         return (
         <>
         
-        <button disabled={likeMutation.isPending} className="cursor-pointer active:scale-110" onClick={() => likeMutation.mutate(id)}>
+        <button disabled={likeMutation.isPending} className="cursor-pointer active:scale-110 flex flex-col items-center" onClick={() => likeMutation.mutate(id)}>
             <ThumbsUp className={`w-5 h-5 text-rose-500 ${liked ? "fill-rose-500" : "fill-none"}`} />
              <span className="text-sm font-semibold">{totalLikes} Likes</span>
         </button>
 
-       
         </>
         )
     

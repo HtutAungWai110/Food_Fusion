@@ -303,7 +303,7 @@ class CommunityCookbookControlller extends Controller
 
         $validator = Validator::make($req->all(), [
             'userId' => 'string',
-            'postId' => 'string',
+            'postId' => 'required|string',
         ]);
 
 

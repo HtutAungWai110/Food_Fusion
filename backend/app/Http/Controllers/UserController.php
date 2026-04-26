@@ -6,6 +6,8 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
 use App\Models\User;
 use App\Models\CommunityCookbook;
+use App\Models\MyCookbook;
+use Illuminate\Support\Facades\Validator;
 
 use Illuminate\Http\Request;
 
@@ -83,6 +85,79 @@ class UserController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to fetch posts'
+            ], 500);
+        }
+    }
+
+    public function addToMycookbook(Request $req){
+        $userId = $req->attributes->get('user_id');
+        $recipeId = $req->query("id");
+
+        $validator = Validator::make($req->all(), [
+            'userId' => 'string',
+            'id' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+        return response()->json([
+            'message' => 'Validation failed',
+            'errors'  => $validator->errors()
+        ], 422);
+        }
+
+        try {
+            $recipeExist = MyCookbook::where([
+                'recipe_id' => $recipeId,
+                'user_id'=> $userId
+            ])->first();
+
+            if($recipeExist){
+                $recipeExist->delete();
+
+                return response()->json([
+                    "message" => "Recipe removed from cookbook",
+                    "added" => false
+                ], 200);
+            } else {
+                MyCookbook::create([
+                    "recipe_id" => $recipeId,
+                    "user_id" => $userId
+                ]);
+
+                return response()->json([
+                    "message" => "Recipe added to cookbook",
+                    "added" => true,
+                    "newRecipe" => MyCookbook::where([
+                        "user_id" => $userId,
+                        "recipe_id" => $recipeId,
+                    ])->with("recipe")->first()
+                ], 201);
+            }
+
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => "Operation failed",
+            ], 500);
+        }
+
+    }
+
+    public function getMyCookbook(Request $req){
+        $userId = $req->attributes->get('user_id');
+
+        try {
+            $myCookBook = MyCookbook::where([
+                "user_id" => $userId
+            ])
+            ->with("recipe")
+            ->get();
+
+            return response()->json($myCookBook, 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => "Failed to fetch resources",
             ], 500);
         }
     }

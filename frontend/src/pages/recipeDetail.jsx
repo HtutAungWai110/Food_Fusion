@@ -23,6 +23,9 @@ import RecipeLikeBtn from "../components/recipeLikeBtn"
 import SignupCard from "../components/SignupCard"
 import { useSelector } from "react-redux"
 import MessagePopupBottom from "../components/messagePopupBottom"
+import AddToMycookbookBtn from "../components/addToMycookbookBtn"
+import { getMyCookbook } from "../states/MyCookbookState"
+import { useDispatch } from "react-redux"
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react"
 import { useEffect, useState } from "react"
@@ -31,7 +34,14 @@ import { useEffect, useState } from "react"
 export default function RecipeDetail() {
     const [searchParams] = useSearchParams();
     const [message, setMessage] = useState(null);
-    const id = searchParams.get("id")
+    const id = searchParams.get("id");
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(getMyCookbook())
+    }, [])
+
+    const {data: myCookbook} = useSelector(state => state.myCookbook)
 
     const { data, isLoading, error } = useQuery({
         queryKey: ["recipe", id],
@@ -40,6 +50,10 @@ export default function RecipeDetail() {
         staleTime: 15,
         gcTime: 10,
     })
+
+    useEffect(() => {
+        console.log(myCookbook)
+    }, [myCookbook])
 
     useEffect(() => {
         console.log(data)
@@ -261,9 +275,7 @@ export default function RecipeDetail() {
 
                                     <Separator />
 
-                                    <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold h-12 rounded-xl transition-all">
-                                        Add to My Cookbook
-                                    </Button>
+                                    <AddToMycookbookBtn id={id} setMessage={setMessage}/>
                                 </CardContent>
                             </Card>
                         </div>

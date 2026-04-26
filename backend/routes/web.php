@@ -31,7 +31,8 @@ Route::prefix('user')->group(function () {
     Route::get('/info', [UserController::class, 'userInfo'])->middleware('tokenCheck');
     Route::post('/uploadAvatar', [UserController::class, 'uploadAvatar'])->middleware(['tokenCheck', 'auth']);
     Route::get('/getPosts', [UserController::class, 'getUserPosts'])->middleware(['tokenCheck', 'auth']);
-
+    Route::post('/addToMycookbook', [UserController::class, 'addToMycookbook'])->middleware(['tokenCheck', 'auth']);
+    Route::get('/getMyCookbook', [UserController::class, 'getMyCookbook'])->middleware(['tokenCheck', 'auth']);
 });
 
 Route::prefix('recipes')->group(function () {

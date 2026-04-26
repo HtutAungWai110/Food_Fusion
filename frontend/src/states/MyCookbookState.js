@@ -1,53 +1,46 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import apiClient from "../lib/client";
+import { cache } from "react";
 
-export const getUser = createAsyncThunk(
+export const getMyCookbook = createAsyncThunk(
     'user/getUser',
-    async (_, { rejectWithValue }) => {
+    cache(async (_, { rejectWithValue }) => {
     try {
-        const res = await apiClient.get('/user/info');
-        return res.data.user;
+        const res = await apiClient.get('/user/getMyCookbook');
+        return res.data;
     } catch (error) {
         return rejectWithValue(error.response?.data?.message || error.message || 'An error occurred');
     }
-    }
+    })
 );
 
-const userSlice = createSlice({
-    name: 'user',
+const myCookbookSlice = createSlice({
+    name: "myCookbook",
     initialState: {
         data: null,
         loading: true,
         error: null,
     },
     reducers: {
-        // You can add synchronous reducers here if needed
-        setUserNull : (state) => {
-            if(state.data){
-            state.data = null;
-            state.error = null;
-            state.loading = false;
-            }
-        }
+        
     },
     extraReducers: (builder) => {
         builder
-            .addCase(getUser.pending, (state) => {
+            .addCase(getMyCookbook.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(getUser.fulfilled, (state, action) => {
+            .addCase(getMyCookbook.fulfilled, (state, action) => {
                 state.loading = false;
                 state.data = action.payload;
                 state.error = null;
             })
-            .addCase(getUser.rejected, (state, action) => {
+            .addCase(getMyCookbook.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
                 state.data = null;
             });
     }
-});
+})
 
-export const { setUserNull } = userSlice.actions;
-export default userSlice.reducer;
+export default myCookbookSlice.reducer;
