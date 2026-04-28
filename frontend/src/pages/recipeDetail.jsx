@@ -24,8 +24,7 @@ import SignupCard from "../components/SignupCard"
 import { useSelector } from "react-redux"
 import MessagePopupBottom from "../components/messagePopupBottom"
 import AddToMycookbookBtn from "../components/addToMycookbookBtn"
-import { getMyCookbook } from "../states/MyCookbookState"
-import { useDispatch } from "react-redux"
+
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react"
 import { useEffect, useState } from "react"
@@ -35,13 +34,9 @@ export default function RecipeDetail() {
     const [searchParams] = useSearchParams();
     const [message, setMessage] = useState(null);
     const id = searchParams.get("id");
-    const dispatch = useDispatch();
 
-    useEffect(() => {
-        dispatch(getMyCookbook())
-    }, [])
 
-    const {data: myCookbook} = useSelector(state => state.myCookbook)
+    const {data: myCookbook} = useSelector((state) => state.myCookbook)
 
     const { data, isLoading, error } = useQuery({
         queryKey: ["recipe", id],
@@ -51,13 +46,14 @@ export default function RecipeDetail() {
         gcTime: 10,
     })
 
+    const recipeExist = (id) => {
+        return myCookbook.some((recipe) => recipe.id === id)
+    }
+
     useEffect(() => {
         console.log(myCookbook)
     }, [myCookbook])
 
-    useEffect(() => {
-        console.log(data)
-    }, [data])
 
     const {data: userData} = useSelector(state => state.user);
 
@@ -275,7 +271,7 @@ export default function RecipeDetail() {
 
                                     <Separator />
 
-                                    <AddToMycookbookBtn id={id} setMessage={setMessage}/>
+                                    <AddToMycookbookBtn id={id} setMessage={setMessage} recipeExist={recipeExist(id)}/>
                                 </CardContent>
                             </Card>
                         </div>

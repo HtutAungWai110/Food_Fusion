@@ -13,6 +13,7 @@ import MessageBox from "../components/MessageBox";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react";
 import apiClient from "../lib/client";
+import { Link } from "react-router-dom";
 
 
 export default function Profile() {
@@ -203,6 +204,10 @@ export default function Profile() {
                         Statistics
                     </h3>
                     <div className="grid grid-cols-1 gap-4">
+                        <Link to="/my_cookbook" className="bg-orange-500/10 p-6 rounded-2xl text-center group hover:bg-orange-500/20 transition-all border border-orange-500/20">
+                            <p className="text-xl font-bold text-orange-600">My Cookbook</p>
+                            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1">Saved Recipes</p>
+                        </Link>
                         <div className="bg-muted/50 p-6 rounded-2xl text-center group hover:bg-orange-500/5 transition-colors">
                             <p className="text-3xl font-bold text-orange-500 group-hover:scale-110 transition-transform">{userPosts?.data?.length || 0}</p>
                             <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1">Posts Shared</p>

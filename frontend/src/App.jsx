@@ -13,6 +13,7 @@ import CommunityCookbook from "./pages/communityCookbook"
 import UploadPost from "./pages/UploadPost"
 import ContactUs from "./pages/contactUs"
 import Profile from "./pages/profile"
+import MyCookbook from "./pages/myCookbook"
 
 import { ThemeProvider } from "./components/theme-provider"
 import { useEffect } from "react"
@@ -22,6 +23,7 @@ import { Spinner } from "@/components/ui/spinner"
 import PublicRoute from "./lib/PublicRoute"
 import ProtectedRoute from "./lib/ProtectedRoute"
 import SessionExpired from "./pages/sessionExpired"
+import { getMyCookbook } from "./states/MyCookbookState"
 
 
 function App() {
@@ -32,6 +34,8 @@ function App() {
 
   useEffect(() => {
     dispatch(getUser())
+
+    dispatch(getMyCookbook())
   }, [dispatch])
 
   
@@ -58,6 +62,7 @@ function App() {
           </Route>
           <Route element={<ProtectedRoute/>}>
             <Route path="/profile" element={<Profile/>}/>
+            <Route path="/my_cookbook" element={<MyCookbook/>}/>
             <Route path="/community_cookbook/upload_post" element={<UploadPost/>}/>
           </Route>
           

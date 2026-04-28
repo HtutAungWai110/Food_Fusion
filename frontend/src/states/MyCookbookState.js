@@ -3,7 +3,7 @@ import apiClient from "../lib/client";
 import { cache } from "react";
 
 export const getMyCookbook = createAsyncThunk(
-    'user/getUser',
+    'myCookbook/getMyCookbook',
     cache(async (_, { rejectWithValue }) => {
     try {
         const res = await apiClient.get('/user/getMyCookbook');
@@ -22,7 +22,14 @@ const myCookbookSlice = createSlice({
         error: null,
     },
     reducers: {
-        
+       addToMycookbook: (state, action) => {
+            state.data.push(
+                action.payload
+            )
+       },
+       removeFromMycookbook: (state, action) => {
+            state.data = state.data.filter((item) => item.id != action.payload)
+       }
     },
     extraReducers: (builder) => {
         builder
@@ -44,3 +51,4 @@ const myCookbookSlice = createSlice({
 })
 
 export default myCookbookSlice.reducer;
+export const {addToMycookbook, removeFromMycookbook} = myCookbookSlice.actions;

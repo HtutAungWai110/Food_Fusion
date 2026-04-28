@@ -130,7 +130,9 @@ class UserController extends Controller
                     "newRecipe" => MyCookbook::where([
                         "user_id" => $userId,
                         "recipe_id" => $recipeId,
-                    ])->with("recipe")->first()
+                    ])
+                    ->with("recipe")
+                    ->first()
                 ], 201);
             }
 
@@ -151,7 +153,8 @@ class UserController extends Controller
                 "user_id" => $userId
             ])
             ->with("recipe")
-            ->get();
+            ->get()
+            ->pluck("recipe");
 
             return response()->json($myCookBook, 200);
 
