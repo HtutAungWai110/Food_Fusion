@@ -1,8 +1,8 @@
 import { useSelector } from "react-redux";
 import RecipeCard from "../components/recipeCard";
-import { motion } from "motion/react";
 import { ChefHat, BookOpen } from "lucide-react";
-
+// eslint-disable-next-line no-unused-vars
+import { motion } from "motion/react";
 export default function MyCookbook() {
   const { data: cookbook, loading, error } = useSelector((state) => state.myCookbook);
 
