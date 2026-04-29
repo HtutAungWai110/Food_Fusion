@@ -35,6 +35,10 @@ export default function ProfileEditPanel({ open, onClose, userData, setMessage }
     mutationFn: (formData) => updateProfile(formData),
     onSuccess: () => {
       dispatch(getUser());
+      setMessage({
+        message: "Saved successfully",
+        status: "success"
+      })
       onClose();
     },
     onError: (error) => {
