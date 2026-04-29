@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
-import { UserCircle, Mail, Calendar, ShieldCheck, ImagePlus } from "lucide-react";
-import { useState, useCallback, useEffect } from "react";
+import { UserCircle, Mail, Calendar, ShieldCheck, ImagePlus, Pen } from "lucide-react";
+import { useState, useCallback } from "react";
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from "../lib/croppImage";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,6 +10,7 @@ import { useDispatch } from "react-redux";
 import { getUser } from "../states/UserState";
 import PostCard from "../components/postCard";
 import MessageBox from "../components/MessageBox";
+import ProfileEditPanel from "../components/profileEditPanel";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react";
 import apiClient from "../lib/client";
@@ -20,6 +21,7 @@ export default function Profile() {
   const { data: userData } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [message, setMessage] = useState(null);
+  const [showEditPanel, setShowEditPanel] = useState(false);
 
   const { data: userPosts, isLoading: postsLoading } = useQuery({
     queryKey: ["userPosts", userData?.id],
@@ -35,9 +37,7 @@ export default function Profile() {
     gcTime: 5 * 60 * 1000,
   });
 
-  useEffect(() => {
-    console.log(userData)
-  }, [userData])
+
   const [image, setImage] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 })
   const [zoom, setZoom] = useState(1)
@@ -132,7 +132,7 @@ export default function Profile() {
           className="space-y-12"
         >
           {/* Profile Header Section */}
-          <div className="flex flex-col md:flex-row items-center md:items-start gap-8 bg-card/30 backdrop-blur-sm p-8 md:p-12 rounded-[2.5rem] border border-orange-500/10 shadow-sm">
+          <div className="relative flex flex-col md:flex-row items-center md:items-start gap-8 bg-card/30 backdrop-blur-sm p-8 md:p-12 rounded-[2.5rem] border border-orange-500/10 shadow-sm">
             {/* Avatar on the Left */}
             <div className="relative group cursor-pointer">
               <div className="bg-linear-to-br from-orange-400 to-orange-600 p-1 rounded-full shadow-xl transition-all duration-500 group-hover:shadow-orange-500/20 group-hover:scale-105">
@@ -194,6 +194,7 @@ export default function Profile() {
                 </p>
               </div>
             </div>
+            <button onClick={() => setShowEditPanel(true)} className="cursor-pointer hover:opacity-50"><Pen size={"17"}/></button>
           </div>
 
           {/* Activity Section */}
@@ -257,6 +258,13 @@ export default function Profile() {
             </div>
           </div>
           {message && <MessageBox message={message.message} status={message.status} setMessage={setMessage} />}
+          {showEditPanel && 
+          <ProfileEditPanel 
+            open={showEditPanel} 
+            onClose={() => setShowEditPanel(false)} 
+            userData={userData} 
+            setMessage={setMessage} 
+          />}
         </motion.div>
       </div>
     </div>

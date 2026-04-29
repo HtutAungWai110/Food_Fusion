@@ -33,6 +33,7 @@ Route::prefix('user')->group(function () {
     Route::get('/getPosts', [UserController::class, 'getUserPosts'])->middleware(['tokenCheck', 'auth']);
     Route::post('/addToMycookbook', [UserController::class, 'addToMycookbook'])->middleware(['tokenCheck', 'auth']);
     Route::get('/getMyCookbook', [UserController::class, 'getMyCookbook'])->middleware(['tokenCheck', 'auth']);
+    Route::put('/updateProfile', [UserController::class, 'updateProfile'])->middleware(['tokenCheck', 'auth']);
 });
 
 Route::prefix('recipes')->group(function () {

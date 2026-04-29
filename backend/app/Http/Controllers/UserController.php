@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\CommunityCookbook;
 use App\Models\MyCookbook;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
 
 use Illuminate\Http\Request;
 
@@ -163,5 +164,58 @@ class UserController extends Controller
                 'message' => "Failed to fetch resources",
             ], 500);
         }
+    }
+
+
+    public function updateProfile(Request $req){
+        $userId = $req->attributes->get("user_id");
+        $data = $req->all();
+
+        $validator = Validator::make($req->all(), [
+            'firstname'     => 'string',
+            'lastname'     => 'string',
+            'email'     => 'string|email',
+            'password'  => 'string|min:8',
+        ]);
+
+          if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors'  => $validator->errors()
+            ], 422);
+        }
+
+
+        $user = User::find($userId);
+        $passwordValid = Hash::check($req->input('password'), $user->password);
+        if(!$passwordValid){
+            return response()->json([
+                'message' => 'Invalid email or password',
+            ], 400);
+        }
+
+        if(trim($user->firstname) != trim($data['firstname'])) {
+            $user->firstname = $data['firstname'];
+        }
+        if(trim($user->lastname) != trim($data['lastname'])) {
+            $user->lastname = $data['lastname'];
+        }
+        if(trim($user->email) != trim($data['email'])) {
+            $emailExist = User::where([
+                "email" => $data['email']
+            ])->first();
+            if($emailExist){
+                return response()->json([
+                'message' => 'User already exist with this email!',
+            ], 400);
+            }
+            $user->email = $data['email'];
+        }
+        $user->save();
+        return response()->json($user, 200);
+
+
+
+
     }
 }

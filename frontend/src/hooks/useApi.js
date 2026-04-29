@@ -143,4 +143,16 @@ async function deletePost(id){
     }
 }
 
-export { register, login, getRecipes, getRecipe, likeRecipe, likePost, getPosts, postComment, uploadPost, deletePost };
+async function updateProfile(formData) {
+    try {
+        const res = await apiClient.put('/user/updateProfile', formData);
+        return res.data;
+    } catch (error) {
+        if (error.response) {
+            throw new Error(error.response.data.message || "Failed to update profile");
+        }
+        throw error;
+    }
+}
+
+export { register, login, getRecipes, getRecipe, likeRecipe, likePost, getPosts, postComment, uploadPost, deletePost, updateProfile };
