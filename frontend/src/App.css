@@ -140,5 +140,10 @@
     @apply bg-orange-700 text-white p-2 rounded-3xl;
   }
 
+  .aboutus-background{
+    background: linear-gradient(rgb(0, 0, 0, 0.75), rgb(0, 0, 0, 0.75), rgb(0, 0, 0, 0.75)), url("../public/aboutus-background.jpg");
+    background-size: cover;
+  }
+
   
 }

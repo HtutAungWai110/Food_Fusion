@@ -14,6 +14,7 @@ import UploadPost from "./pages/UploadPost"
 import ContactUs from "./pages/contactUs"
 import Profile from "./pages/profile"
 import MyCookbook from "./pages/myCookbook"
+import AboutUs from "./pages/aboutUs"
 
 import { ThemeProvider } from "./components/theme-provider"
 import { useEffect } from "react"
@@ -70,7 +71,7 @@ function App() {
           <Route path="/reset-password" element={<ResetPassword/>}/>
           <Route path="/session-expired" element={<SessionExpired/>}/>
           
-          <Route path="/about_us" element={<h1>About us</h1>} />
+          <Route path="/about_us" element={<AboutUs/>} />
           <Route path="/recipe_collection" element={<Recipes/>} />
           <Route path="/recipe_collection/recipe" element={<RecipeDetail/>} />
           <Route path="/community_cookbook" element={<CommunityCookbook/>} />
