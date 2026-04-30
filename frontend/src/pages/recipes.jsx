@@ -28,7 +28,12 @@ export default function Recipes() {
     queryKey: ["recipes", cuisine, difficulty, page, debouncedSearch],
     queryFn: () => getRecipes(cuisine, difficulty, page, debouncedSearch),
     staleTime: 5 * 60 * 1000,
+    retry: false
   })
+
+  useEffect(() => {
+    console.log(data)
+  }, [data])
 
   useEffect(() => {
     sessionStorage.setItem("cuisine", JSON.stringify(cuisine));

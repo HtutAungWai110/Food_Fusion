@@ -35,7 +35,18 @@ class RecipesController extends Controller
             return response()->json($query->paginate(12));
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Failed to fetch resources'
+                'message' => "Failed to fetch recipes"
+            ], 500);
+        }
+    }
+
+    public function getDownladableRecipes(Request $req){
+         try {
+            $query = Recipe::with("user:id,firstname,lastname,email");
+            return response()->json($query->paginate(6));
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => "Failed to fetch recipes"
             ], 500);
         }
     }

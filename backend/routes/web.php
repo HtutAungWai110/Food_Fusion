@@ -42,6 +42,7 @@ Route::prefix('recipes')->group(function () {
     Route::get("/popularRecipes", [RecipesController::class, "getPopularRecipes"]);
     Route::post("/likeRecipe", [RecipesController::class, "handleLike"])->middleware(['tokenCheck', 'auth']);
     Route::get("/liked", [RecipesController::class, "checkLiked"])->middleware(['tokenCheck', 'auth']);
+    Route::get("/cards", [RecipesController::class, "getDownladableRecipes"]);
 });
 
 Route::prefix('community_cookbook')->group(function () {

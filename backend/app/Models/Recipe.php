@@ -55,6 +55,7 @@ class Recipe extends Model
         'instructions',
         'detailed_instruction',
         'image_path',
+        'card_url'
     ];
 
     /**
@@ -96,17 +97,21 @@ class Recipe extends Model
         return $this->hasMany(RecipeLikes::class, 'post_id');
     }
 
-    protected $appends = ['image_url'];
+    protected $appends = ['image_url', 'card_path'];
 
     public function getImageUrlAttribute()
-        {
-
-            if ($this->image_path) {
-                return url('storage/' . $this->image_path);
-            }
-            return null;
+    {
+        if ($this->image_path) {
+            return url('storage/' . $this->image_path);
         }
+        return null;
+    }
 
-
-
+    public function getCardPathAttribute()
+    {
+        if ($this->card_url) {
+            return url('storage/' . $this->card_url);
+        }
+        return null;
+    }
 }
