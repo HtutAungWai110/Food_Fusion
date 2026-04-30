@@ -145,5 +145,10 @@
     background-size: cover;
   }
 
+   .home-background{
+    background: linear-gradient(rgb(0, 0, 0, 0.75), rgb(0, 0, 0, 0.75), rgb(0, 0, 0, 0.75)), url("../public/home-background.jpg");
+    background-size: cover;
+  }
+
   
 }

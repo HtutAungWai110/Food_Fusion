@@ -42,8 +42,10 @@ class RecipesController extends Controller
 
     public function getDownladableRecipes(Request $req){
          try {
-            $query = Recipe::with("user:id,firstname,lastname,email");
-            return response()->json($query->paginate(6));
+            $query = Recipe::whereNotNull("card_url")
+            ->with("user:id,firstname,lastname,email")
+            ->get();
+            return response()->json($query);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => "Failed to fetch recipes"
