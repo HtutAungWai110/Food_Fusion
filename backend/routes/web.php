@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\RecipesController;
 use App\Http\Controllers\CommunityCookbookControlller;
 use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\EducationalResourcesController;
 
 Route::get('/', function () {
     // return response()->json([
@@ -32,7 +33,7 @@ Route::prefix('user')->group(function () {
     Route::post('/uploadAvatar', [UserController::class, 'uploadAvatar'])->middleware(['tokenCheck', 'auth']);
     Route::get('/getPosts', [UserController::class, 'getUserPosts'])->middleware(['tokenCheck', 'auth']);
     Route::post('/addToMycookbook', [UserController::class, 'addToMycookbook'])->middleware(['tokenCheck', 'auth']);
-    Route::get('/getMyCookbook', [UserController::class, 'getMyCookbook'])->middleware(['tokenCheck', 'auth']);
+    Route::get('/getMyCookbook', [UserController::class, 'getMyCookbook'])->middleware(['tokenCheck']);
     Route::put('/updateProfile', [UserController::class, 'updateProfile'])->middleware(['tokenCheck', 'auth']);
 });
 
@@ -61,6 +62,11 @@ Route::prefix('community_cookbook')->group(function () {
 
 Route::prefix('feedback')->group(function () {
     Route::post('/submit', [FeedbackController::class, 'submitFeedback']);
+});
+
+
+Route::prefix('educational_resources')->group(function () {
+    Route::get('/all', [EducationalResourcesController::class, "getEducationalResources"]);
 });
 
 

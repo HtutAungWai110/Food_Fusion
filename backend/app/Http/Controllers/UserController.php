@@ -16,11 +16,9 @@ class UserController extends Controller
 {
 
  public function userInfo(Request $req){
-        $accessToken = $req->cookie('access_token');
-        if($accessToken){
 
-        $payload = auth('api')->setToken($accessToken)->getPayload();
-        $userId = $payload->get('sub');
+        $userId = $this->getUserIdFromCookie($req);
+        if($userId){
         $user = User::find($userId);
 
         return response()->json([
@@ -147,8 +145,7 @@ class UserController extends Controller
     }
 
     public function getMyCookbook(Request $req){
-        $userId = $req->attributes->get('user_id');
-
+        $userId = $this->getUserIdFromCookie($req);
         try {
             $myCookBook = MyCookbook::where([
                 "user_id" => $userId
@@ -217,5 +214,16 @@ class UserController extends Controller
 
 
 
+    }
+
+     private function getUserIdFromCookie(Request $req){
+        $accessToken = $req->cookie('access_token');
+        if ($accessToken) {
+                $payload = auth('api')->setToken($accessToken)->getPayload();
+                $userId = $payload->get('sub');
+                return $userId;
+        }
+
+        return null;
     }
 }

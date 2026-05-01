@@ -2,25 +2,29 @@ import apiClient from "../lib/client";
 import { useQuery } from "@tanstack/react-query"
 import { useEffect } from "react";
 import DownloadableCard from "../components/downloadableCard";
+import PdfCard from "../components/pdfCard";
 import { Skeleton } from "@/components/ui/skeleton"
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react";
 import { useState } from "react";
 const videoIds = [
-    "mhDJNfV7hjk",
-    "Cyskqnp1j64",
-    "hyqfWbDWi9M",
-    "WJ_U71a5t-M",
-    "FXa2tAH3Ulw",
-    "lqUtV6lT1n4",
-    "7z1Ygygfquw",
-    "H_erG7HSK0A",
-    "YrHpeEwk_-U"
+    "1kUE0BZtTRc",
+    "T4xKThjcKaE",
+    "VfowJHJz6-s",
+    "Giek094C_l4",
+    "xKxrkht7CpY",
+    "RnvCbquYeIM",
+    "44Wp3WE1AHs",
+    "Q6f7CcekmpI",
+    "XpF9zc57HAE"
 ];
 
 
 function VideoWithSkeleton({ videoId }) {
     const [loaded, setLoaded] = useState(false);
+
+    
+
 
     return (
         <div className="relative">
@@ -51,18 +55,19 @@ function VideoWithSkeleton({ videoId }) {
     );
 }
 
-export default function CulinaryResources(){
+export default function EducationalResources(){
 
-    const {data: cards, isLoading, error} = useQuery({
-        queryFn: async()=> {
-            const res = await apiClient.get("/recipes/cards");
+    const {data: resources, isLoading, error} = useQuery({
+        queryKey: ["Educational_resources"],
+        queryFn: async() => {
+            const res = await apiClient.get("/educational_resources/all");
             return res.data
         }
     })
 
     useEffect(() => {
-        console.log(cards)
-    }, [cards])
+        console.log(resources)
+    }, [resources])
 
     const container = {
     hidden: { opacity: 0 },
@@ -79,12 +84,11 @@ export default function CulinaryResources(){
     if (error) {
     return (
         <div className="container mx-auto py-12 px-4 text-center">
-          <h2 className="text-2xl font-bold text-red-500">Error loading recipes</h2>
+          <h2 className="text-2xl font-bold text-red-500">Error loading resources</h2>
           <p className="text-muted-foreground mt-2">{error.message}</p>
         </div>
       )
     }
- 
 
 
     return (
@@ -98,37 +102,44 @@ export default function CulinaryResources(){
           </p>
         </div>
 
-        {isLoading &&
+        {isLoading && (
           <div className="container mx-auto py-8 px-4">
-          <h1 className="text-3xl font-bold mb-8 text-center text-orange-500">Our Recipe Collection</h1>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 justify-items-center">
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-              <div key={i} className="w-full max-w-md space-y-4">
-                <Skeleton className="h-[200px] w-full rounded-xl" />
-                <div className="space-y-2">
-                  <Skeleton className="h-6 w-3/4" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-5/6" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="w-full max-w-md space-y-4">
+                  <Skeleton className="h-[200px] w-full rounded-xl" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-6 w-3/4" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-5/6" />
+                  </div>
+                  <div className="flex gap-2">
+                    <Skeleton className="h-10 w-1/2" />
+                    <Skeleton className="h-10 w-1/2" />
+                  </div>
                 </div>
-                <Skeleton className="h-12 w-full" />
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-        }
-        
-        <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
-        {cards?.map((recipe) => (
-          <DownloadableCard key={recipe.id} recipe={recipe} />
-        ))}
+        )}
+
+        <motion.div
+          variants={container}
+          initial="hidden"
+          animate="show"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center mb-16"
+        >
+          {resources?.map((resource) => (
+            <PdfCard key={resource.id} resource={resource} />
+          ))}
         </motion.div>
 
         <div className="m-10 text-center">
           <h1 className="text-4xl font-extrabold tracking-tight mb-3 text-orange-600 dark:text-orange-500">
-            Cooking Videos
+            Educational Videos
           </h1>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Watch cooking videos and kitchen hacks.
+            Watch videos about renewable energy
           </p>
         </div>
 

@@ -16,6 +16,7 @@ import Profile from "./pages/profile"
 import MyCookbook from "./pages/myCookbook"
 import AboutUs from "./pages/aboutUs"
 import CulinaryResources from "./pages/culinaryResources"
+import EducationalResources from "./pages/educationalResources"
 
 import { ThemeProvider } from "./components/theme-provider"
 import { useEffect } from "react"
@@ -79,7 +80,7 @@ function App() {
           <Route path="/community_cookbook" element={<CommunityCookbook/>} />
           <Route path="/contact_us" element={<ContactUs/>} />
           <Route path="/curlinary_resources" element={<CulinaryResources/>} />
-          <Route path="/educational_resources" element={<h1>Educational Resources</h1>} />
+          <Route path="/educational_resources" element={<EducationalResources/>} />
           
         </Routes>
       </BrowserRouter>
