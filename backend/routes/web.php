@@ -25,7 +25,7 @@ Route::prefix('auth')->group(function () {
     Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
     Route::post('/reset-password', [AuthController::class, 'resetPassword']);
     Route::post('/check-reset-session', [AuthController::class, 'checkResetSessoin']);
-
+    Route::post('/logout', [AuthController::class, 'logout']);
 });
 
 Route::prefix('user')->group(function () {
@@ -55,6 +55,7 @@ Route::prefix('community_cookbook')->group(function () {
     Route::get('/getComments', [CommunityCookbookControlller::class, "getComments"])->middleware('tokenCheck');
     Route::delete('/deleteComment', [CommunityCookbookControlller::class, "deleteComment"])->middleware(['tokenCheck', 'auth']);
     Route::post('/uploadPost', [CommunityCookbookControlller::class, "createPost"])->middleware(['tokenCheck', 'auth']);
+    Route::post('/updatePost', [CommunityCookbookControlller::class, "updatePost"])->middleware(['tokenCheck', 'auth']);
     Route::put('/updateComment', [CommunityCookbookControlller::class, "updateComment"])->middleware(['tokenCheck', 'auth']);
     Route::delete('/deletePost', [CommunityCookbookControlller::class, "deletePost"])->middleware(['tokenCheck', 'auth']);
 

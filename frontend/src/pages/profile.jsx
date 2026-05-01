@@ -9,8 +9,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useDispatch } from "react-redux";
 import { getUser } from "../states/UserState";
 import PostCard from "../components/postCard";
-import MessageBox from "../components/MessageBox";
+import MessagePopupBottom from "../components/messagePopupBottom";
 import ProfileEditPanel from "../components/profileEditPanel";
+import LogoutBtn from "../components/logoutBtn";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react";
 import apiClient from "../lib/client";
@@ -24,7 +25,7 @@ export default function Profile() {
   const [showEditPanel, setShowEditPanel] = useState(false);
 
   const { data: userPosts, isLoading: postsLoading } = useQuery({
-    queryKey: ["userPosts", userData?.id],
+    queryKey: ["userPosts"],
     queryFn: async () => {
       try {
         const response = await apiClient.get("/user/getPosts");
@@ -132,11 +133,24 @@ export default function Profile() {
           className="space-y-12"
         >
           {/* Profile Header Section */}
-          <div className="relative flex flex-col md:flex-row items-center md:items-start gap-8 bg-card/30 backdrop-blur-sm p-8 md:p-12 rounded-[2.5rem] border border-orange-500/10 shadow-sm">
+          <div className="relative w-full flex items-center md:items-start gap-4 md:gap-8 bg-card/30 backdrop-blur-sm p-6 md:p-12 rounded-3xl md:rounded-[2.5rem] border border-orange-500/10 shadow-sm">
             {/* Avatar on the Left */}
+           
+               <div className="absolute top-2 sm:right-5 right-3">
+                 <button  onClick={() => setShowEditPanel(true)} className="cursor-pointer hover:opacity-50"><Pen className="sm:w-5 w-4"/></button>
+                
+               </div>
+
+               <div className="absolute bottom-2 sm:right-5 right-3">
+                  <LogoutBtn/>                
+               </div>
+                
+           
             <div className="relative group cursor-pointer">
-              <div className="bg-linear-to-br from-orange-400 to-orange-600 p-1 rounded-full shadow-xl transition-all duration-500 group-hover:shadow-orange-500/20 group-hover:scale-105">
-                <div className="bg-background rounded-full w-32 h-32 md:w-40 md:h-40 flex items-center justify-center overflow-hidden relative">
+              
+              
+              <div className="bg-linear-to-br from-orange-400 to-orange-600 p-0.5 md:p-1 rounded-full shadow-xl transition-all duration-500 group-hover:shadow-orange-500/20 group-hover:scale-105">
+                <div className="bg-background rounded-full w-12 h-12 md:w-40 md:h-40 flex items-center justify-center overflow-hidden relative">
                   {userData.image_url ? (
                     <>
                       {imageLoading && <Skeleton className="w-full h-full rounded-full absolute inset-0 z-10" />}
@@ -153,8 +167,8 @@ export default function Profile() {
 
                   {/* Hover Overlay */}
                   <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
-                    <ImagePlus className="w-8 h-8 text-white mb-1" />
-                    <span className="text-[10px] text-white font-bold uppercase tracking-widest">Update</span>
+                    <ImagePlus className="w-6 h-6 md:w-8 md:h-8 text-white mb-1" />
+                    <span className="text-[8px] md:text-[10px] text-white font-bold uppercase tracking-widest">Update</span>
                     <input 
                     type="file"  
                     accept="image/*"
@@ -163,38 +177,35 @@ export default function Profile() {
                   </div>
                 </div>
               </div>
-              <div className="absolute -bottom-2 -right-2 bg-green-500 border-4 border-background w-8 h-8 rounded-full flex items-center justify-center shadow-lg z-20" title="Online">
-                <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+              <div className="absolute -bottom-1 -right-1 md:-bottom-2 md:-right-2 bg-green-500 border-2 md:border-4 border-background w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center shadow-lg z-20" title="Online">
+                <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-white rounded-full animate-pulse" />
               </div>
             </div>
 
             {/* User Info on the Right */}
 
-            <div className="flex-1 text-center md:text-left space-y-4 pt-2">
+            <div className="flex-1 space-y-2 md:space-y-4 pt-2">
               <div className="space-y-1">
-                <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
-                  <h1 className="text-3xl md:text-5xl font-extrabold text-foreground tracking-tight">
+                <div className="flex flex-col gap-1 md:gap-4">
+                  <h1 className="text-xl md:text-3xl font-extrabold text-foreground tracking-tight">
                     {userData.firstname} {userData.lastname}
                   </h1>
-                  <div className="flex items-center gap-1 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 px-3 py-1 rounded-full text-xs font-bold border border-orange-200 dark:border-orange-800/50">
-                    <ShieldCheck className="w-3 h-3" />
-                    Verified Member
-                  </div>
+                  
                 </div>
               </div>
               
-              <div className="flex flex-col gap-3 text-muted-foreground font-medium text-lg">
-                <p className="flex items-center justify-center md:justify-start gap-3 hover:text-orange-500 transition-colors cursor-default">
-                  <Mail className="w-5 h-5 text-orange-500" />
+              <div className="flex flex-col gap-1 md:gap-3 text-muted-foreground font-medium text-[0.7em] sm:text-lg">
+                <p className="flex items-center justify-start md:justify-start gap-2 md:gap-3 hover:text-orange-500 transition-colors cursor-default">
+                  <Mail className="w-4 h-4 md:w-5 md:h-5 text-orange-500" />
                   {userData.email}
                 </p>
-                <p className="flex items-center justify-center md:justify-start gap-3">
-                  <Calendar className="w-5 h-5 text-orange-500" />
+                <p className="flex items-center justify-start md:justify-start gap-2 md:gap-3">
+                  <Calendar className="w-4 h-4 md:w-5 md:h-5 text-orange-500" />
                   Joined {joinedDate}
                 </p>
               </div>
             </div>
-            <button onClick={() => setShowEditPanel(true)} className="cursor-pointer hover:opacity-50"><Pen size={"17"}/></button>
+            
           </div>
 
           {/* Activity Section */}
@@ -257,7 +268,7 @@ export default function Profile() {
                 )}
             </div>
           </div>
-          {message && <MessageBox message={message.message} status={message.status} setMessage={setMessage} />}
+          
           {showEditPanel && 
           <ProfileEditPanel 
             open={showEditPanel} 
@@ -267,6 +278,11 @@ export default function Profile() {
           />}
         </motion.div>
       </div>
+
+      {message
+          && 
+      <MessagePopupBottom message={message.message} status={message.status} setMessage={setMessage}/>
+      }
     </div>
   );
 }

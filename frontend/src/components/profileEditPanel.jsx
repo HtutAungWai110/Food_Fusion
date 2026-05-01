@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, } from "@tanstack/react-query";
 import { updateProfile } from "../hooks/useApi";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,7 @@ import { useState } from "react";
 import MessageBox from "./MessageBox";
 
 export default function ProfileEditPanel({ open, onClose, userData, setMessage }) {
+
   const { register, handleSubmit, watch, formState: { errors } } = useForm({
     defaultValues: {
       firstname: userData?.firstname,
@@ -43,6 +44,8 @@ export default function ProfileEditPanel({ open, onClose, userData, setMessage }
     },
     onError: (error) => {
       setErrorState(error.message);
+
+      
     },
     onMutate: () => {
       setErrorState(null)

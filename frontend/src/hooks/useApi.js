@@ -155,4 +155,16 @@ async function updateProfile(formData) {
     }
 }
 
-export { register, login, getRecipes, getRecipe, likeRecipe, likePost, getPosts, postComment, uploadPost, deletePost, updateProfile };
+async function updatePost(formData) {
+    try {
+        const res = await apiClient.post('/community_cookbook/updatePost', formData);
+        return res.data;
+    } catch (error) {
+        if (error.response) {
+            throw new Error(`Status: ${error.response.status}, ${error.response.data.message}`);
+        }
+        throw error;
+    }
+}
+
+export { register, login, getRecipes, getRecipe, likeRecipe, likePost, getPosts, postComment, uploadPost, deletePost, updateProfile, updatePost };

@@ -187,7 +187,7 @@ class UserController extends Controller
         $passwordValid = Hash::check($req->input('password'), $user->password);
         if(!$passwordValid){
             return response()->json([
-                'message' => 'Invalid email or password',
+                'message' => 'Invalid password',
             ], 400);
         }
 

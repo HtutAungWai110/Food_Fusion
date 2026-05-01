@@ -1,5 +1,6 @@
 import CarouselEvents from "../components/eventCarousel";
 import { JoinusCard } from "../components/JoinusCard";
+import ConsentPopup from "../components/consentPopup";
 
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react"
@@ -16,9 +17,10 @@ export default function Home() {
     {!loading && !data &&
       <JoinusCard/>
     }
+    <ConsentPopup/>
     
     <motion.div animate={{ opacity: [0, 1], translateY: [-30, 10, 0], transition: {duration: 1.2} }}> 
-    <div className="flex flex-col gap-12 pb-12 w-full">
+    <div className="flex flex-col gap-12 pb-12 w-full overflow-hidden">
       <section className="home-background p-20">
         <div className="text-center max-w-3xl mx-auto">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-orange-500">

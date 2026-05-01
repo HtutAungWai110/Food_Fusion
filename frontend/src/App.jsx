@@ -17,6 +17,8 @@ import MyCookbook from "./pages/myCookbook"
 import AboutUs from "./pages/aboutUs"
 import CulinaryResources from "./pages/culinaryResources"
 import EducationalResources from "./pages/educationalResources"
+import CookiePolicy from "./pages/legalNotice"
+// import Footer from "./components/footer"
 
 import { ThemeProvider } from "./components/theme-provider"
 import { useEffect } from "react"
@@ -79,10 +81,12 @@ function App() {
           <Route path="/recipe_collection/recipe" element={<RecipeDetail/>} />
           <Route path="/community_cookbook" element={<CommunityCookbook/>} />
           <Route path="/contact_us" element={<ContactUs/>} />
-          <Route path="/curlinary_resources" element={<CulinaryResources/>} />
+          <Route path="/culinary_resources" element={<CulinaryResources/>} />
           <Route path="/educational_resources" element={<EducationalResources/>} />
+          <Route path="/legal_notice" element={<CookiePolicy/>} />
           
         </Routes>
+        {/* <Footer/> */}
       </BrowserRouter>
     </ThemeProvider>
   )

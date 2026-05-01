@@ -12,7 +12,7 @@ import {
     DropdownMenuSeparator
 } from "../components/ui/dropdown-menu"
 
-export default function PostModifyBtn({ id, setMessage }) {
+export default function PostModifyBtn({ id, setMessage, onEdit }) {
     const queryClient = useQueryClient();
     const deleteMutation = useMutation({
         mutationFn: (id) => deletePost(id),
@@ -21,12 +21,18 @@ export default function PostModifyBtn({ id, setMessage }) {
             queryClient.invalidateQueries({
                 queryKey: ["posts"]
             })
+
+            setMessage({
+                message: "Post deleted successfully",
+                status: "success"
+            })
         }   
     })
 
     const handleEdit = () => {
-        console.log("Edit post", id);
-        // Implementation for edit will go here
+        if (onEdit) {
+            onEdit();
+        }
     };
 
     const handleDelete = () => {

@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Heart, MessageCircle, Share2, UserCircle, X, MoreHorizontal } from "lucide-react"
+import { Heart, MessageCircle, Share2, UserCircle, X, MoreHorizontal, ImagePlus } from "lucide-react"
 import PostLikeBtn from "./postLikeBtn"
 import { memo, useEffect, useState } from "react"
 import SignupCard from "./SignupCard"
@@ -12,8 +12,12 @@ import { useSelector } from "react-redux"
 import {Skeleton} from "@/components/ui/skeleton"
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "motion/react"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import apiClient from "../lib/client"
+import { useForm } from "react-hook-form"
+import { updatePost } from "../hooks/useApi"
+import { Textarea } from "@/components/ui/textarea"
+import { Spinner } from "@/components/ui/spinner"
 
 function PostCard({ initialData, setMessage }) {
 
@@ -30,12 +34,59 @@ function PostCard({ initialData, setMessage }) {
             throw new Error(error.response?.data?.message || error.message);
         }
     },
-    refetchOnMount: false
   })
   const { user, post_description, image_url, likes, created_at, id, modifiable, isLiked } = post;
   const [showingComments, setShowingComments] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
   const [userImageLoading, setUserImageLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editPreview, setEditPreview] = useState(image_url);
+  const queryClient = useQueryClient();
+  const { register, handleSubmit, formState: { errors }, reset } = useForm();
+
+  const updateMutation = useMutation({
+    mutationFn: (formData) => updatePost(formData),
+    onSuccess: (data) => {
+      setIsEditing(false)
+      setMessage({ message: data.message, status: "success" });
+      queryClient.invalidateQueries({ queryKey: ["post", id] });
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+    onError: (error) => {
+      console.error(error)
+      setMessage({ message: error.message, status: "error" });
+    }
+  });
+
+  useEffect(() => {
+    if (isEditing) {
+      reset({ description: post_description });
+      setEditPreview(image_url);
+    }
+  }, [isEditing, post_description, image_url, reset]);
+
+
+  const onEditImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setEditPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const onSubmitEdit = (data) => {
+    if(data.description.trim() === post_description.trim() && editPreview === image_url){
+      setIsEditing(false)
+      return;
+    }
+    const formData = new FormData();
+    formData.append('postId', id);
+    formData.append('description', data.description);
+    if (data.image && data.image[0]) {
+      formData.append('image', data.image[0]);
+    }
+    
+    updateMutation.mutate(formData);
+  };
 
   // Format date to locale string
   const date = new Date(created_at).toLocaleDateString(undefined, {
@@ -100,30 +151,89 @@ function PostCard({ initialData, setMessage }) {
 
           {
             modifiable &&
-            <PostModifyBtn id={id} setMessage={setMessage}/>
+            <PostModifyBtn id={id} setMessage={setMessage} onEdit={() => setIsEditing(true)}/>
           }
         </CardHeader>
 
         <CardContent className="space-y-4 pt-2 px-4">
-          <p className="text-sm sm:text-base leading-relaxed text-foreground/90 whitespace-pre-wrap">
-            {post_description}
-          </p>
+          {isEditing ? (
+            <form onSubmit={handleSubmit(onSubmitEdit)} className="space-y-4">
+              <div className="space-y-2">
+                <Textarea
+                  {...register("description", { required: "Description is required" })}
+                  className="min-h-[100px] focus-visible:ring-orange-500"
+                  placeholder="Update your post..."
+                />
+                {errors.description && (
+                  <p className="text-xs text-destructive">{errors.description.message}</p>
+                )}
+              </div>
 
-          {
-            image_url && imageLoading && (
-              <Skeleton className="w-full h-64 rounded-xl" />
-            )
-          }
-          
-          {image_url && (
-            <div className="rounded-xl overflow-hidden border border-border/50">
-              <img 
-                src={image_url} 
-                alt="Post content" 
-                className="w-full h-auto " 
-                onLoad={() => setImageLoading(false)}
-              />
-            </div>
+              <div className="relative group">
+                <div className="relative rounded-xl overflow-hidden border border-border/50 bg-muted/30">
+                  {editPreview ? (
+                    <img src={editPreview} alt="Preview" className="w-full h-auto opacity-50" />
+                  ) : (
+                    <div className="h-32 flex items-center justify-center border-2 border-dashed border-muted-foreground/25 rounded-xl">
+                       <ImagePlus className="w-8 h-8 text-muted-foreground/40" />
+                    </div>
+                  )}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="bg-background/80 p-2 rounded-lg shadow-sm border border-border flex items-center gap-2 cursor-pointer hover:bg-background transition-colors">
+                      <ImagePlus className="w-4 h-4 text-orange-500" />
+                      <span className="text-xs font-semibold">Change Image</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="absolute inset-0 opacity-0 cursor-pointer"
+                        {...register("image", { onChange: onEditImageChange })}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 pt-2">
+                <Button 
+                  type="submit" 
+                  disabled={updateMutation.isPending} 
+                  className="flex-1 bg-orange-500 hover:bg-orange-600 h-9"
+                >
+                  {updateMutation.isPending ? <Spinner className="w-4 h-4 mr-2" /> : "Save Changes"}
+                </Button>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setIsEditing(false)} 
+                  className="h-9"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          ) : (
+            <>
+              <p className="text-sm sm:text-base leading-relaxed text-foreground/90 whitespace-pre-wrap">
+                {post_description}
+              </p>
+
+              {
+                image_url && imageLoading && (
+                  <Skeleton className="w-full h-64 rounded-xl" />
+                )
+              }
+              
+              {image_url && (
+                <div className="rounded-xl overflow-hidden border border-border/50">
+                  <img 
+                    src={image_url} 
+                    alt="Post content" 
+                    className="w-full h-auto " 
+                    onLoad={() => setImageLoading(false)}
+                  />
+                </div>
+              )}
+            </>
           )}
         </CardContent>
 

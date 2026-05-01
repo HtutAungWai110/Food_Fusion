@@ -141,6 +141,15 @@ class AuthController extends Controller
 
     }
 
+    public function  logout(Request $request){
+
+        $accessCookie = Cookie::forget('access_token');
+        $refreshCookie = Cookie::forget('refresh_token');
+
+        return response()->json([
+            "message" => "Logged out successfully"
+        ], 200)->withCookie($accessCookie )->withCookie($refreshCookie);
+    }
     public function refreshToken(Request $request)
     {
         // Check if access_token exists in cookies

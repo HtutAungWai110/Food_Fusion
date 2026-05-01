@@ -248,6 +248,56 @@ class CommunityCookbookControlller extends Controller
         }
     }
 
+    public function updatePost(Request $req){
+        $userId = $req->attributes->get('user_id');
+        $postId = $req->input('postId');
+        $description = $req->input('description');
+
+        $validator = Validator::make($req->all(), [
+            'postId' => 'required|string|',
+            'description' => 'required|string|max:1000',
+            'image' => 'image|max:2048'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors'  => $validator->errors()
+            ], 422);
+        }
+
+
+        try {
+
+        $post = CommunityCookbook::find($postId)->first();
+        if(trim($post->post_description) != trim($description)){
+            $post->post_description = trim($description);
+            $post->save();
+        }
+
+        $image = $req->file('image');
+        if($image){
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $imagePath = 'community_cookbook_images/' . $imageName;
+            $image->move(public_path('storage/community_cookbook_images'), $imageName);
+            $post->image_path = $imagePath;
+            $post->save();
+        }
+
+
+
+        return response()->json([
+            "message" => "Post updated successfully"
+        ], 200);
+
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function updateComment(Request $req){
         $userId = $req->attributes->get("user_id");
 

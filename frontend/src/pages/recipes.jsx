@@ -31,10 +31,7 @@ export default function Recipes() {
     retry: false
   })
 
-  useEffect(() => {
-    console.log(data)
-  }, [data])
-
+  
   useEffect(() => {
     sessionStorage.setItem("cuisine", JSON.stringify(cuisine));
     sessionStorage.setItem("difficulty", JSON.stringify(difficulty));
@@ -128,8 +125,8 @@ export default function Recipes() {
         </p>
       </div>
 
-        <div className="p-2 flex sm:flex-row sm:justify-between sm:items-center m-[10px_0px] flex-col justify-start items-start">
-          <div className="relative flex items-center sm:w-[30%]">
+        <div className="p-2 flex flex-col sm:flex-row sm:justify-between gap-2">
+          <div className="relative flex items-center sm:w-[50%]">
     
             <div className="absolute left-3 flex items-center pointer-events-none">
               <Search className="h-5 w-5 text-gray-400" />
